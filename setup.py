@@ -1,7 +1,8 @@
 from setuptools import setup
-from pkg_resources import parse_requirements
+from pkg_resources import parse_requirements,run_script
 import pathlib
 import os
+
 
 setup(name='bol',
       version='0.1',
@@ -15,8 +16,10 @@ setup(name='bol',
       platforms=["linux", "unix"],
       python_requires=">3.5.2",
       include_package_data=True,
-      install_requires=[
-        str(requirement) for requirement
-            in parse_requirements(pathlib.Path('requirements.txt').open())
-      ],
+#       install_requires=[
+#         str(requirement) for requirement
+#             in parse_requirements(pathlib.Path('requirements.txt').open())
+#       ],
+      
+      run_script(['fairseq'], 'bin/install.sh')
       zip_safe=False)
