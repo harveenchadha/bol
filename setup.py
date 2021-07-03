@@ -1,5 +1,7 @@
 from setuptools import setup
 from pkg_resources import parse_requirements
+import pathlib
+import os
 
 setup(name='bol',
       version='0.1',
