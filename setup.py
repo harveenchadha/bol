@@ -15,5 +15,5 @@ setup(name='bol',
       install_requires=[
         str(requirement) for requirement
             in parse_requirements(pathlib.Path('requirements.txt').open())
-      ]
+      ],
       zip_safe=False)
