@@ -8,7 +8,12 @@ setup(name='bol',
       author_email='harveen54@gmail.com',
       license='MIT',
       packages=['bol'],
-#       dependency_links=['https://github.com/Open-Speech-EkStep/fairseq.git#egg=fairseq'],
-#       install_requires=['pypi-kenlm'],
-      scripts=['bin/install.sh'],
+#       scripts=['bin/install.sh'],
+      platforms=["linux", "unix"],
+      python_requires=">3.5.2",
+      include_package_data=True,
+      install_requires=[
+        str(requirement) for requirement
+            in parse_requirements(pathlib.Path('requirements.txt').open())
+      ]
       zip_safe=False)
