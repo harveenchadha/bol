@@ -16,10 +16,10 @@ setup(name='bol',
       platforms=["linux", "unix"],
       python_requires=">3.5.2",
       include_package_data=True,
-#       install_requires=[
-#         str(requirement) for requirement
-#             in parse_requirements(pathlib.Path('requirements.txt').open())
-#       ],
+      install_requires=[
+        str(requirement) for requirement
+            in parse_requirements(pathlib.Path('requirements.txt').open())
+      ],
       
-      install_requires=[run_script(['fairseq'], 'bin/install.sh')],
+#       install_requires=[run_script(['fairseq'], 'bin/install.sh')],
       zip_safe=False)
