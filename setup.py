@@ -8,6 +8,6 @@ setup(name='bol',
       author_email='harveen54@gmail.com',
       license='MIT',
       packages=['bol'],
-      dependency_links=['https://github.com/Open-Speech-EkStep/fairseq.git#egg=fairseq']
+      dependency_links=['https://github.com/Open-Speech-EkStep/fairseq.git#egg=fairseq'],
       install_requires=['pypi-kenlm'],
       zip_safe=False)
