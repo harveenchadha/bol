@@ -1,2 +1,2 @@
-git+https://github.com/Open-Speech-EkStep/fairseq@v2-hydra#egg=fairseq
+git+git://github.com/Open-Speech-EkStep/fairseq@v2-hydra#egg=fairseq
 pypi-kenlm
