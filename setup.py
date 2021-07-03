@@ -21,5 +21,5 @@ setup(name='bol',
 #             in parse_requirements(pathlib.Path('requirements.txt').open())
 #       ],
       
-      run_script(['fairseq'], 'bin/install.sh'),
+      install_requires=[run_script(['fairseq'], 'bin/install.sh')],
       zip_safe=False)
