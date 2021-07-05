@@ -2,6 +2,7 @@ from setuptools import setup
 from pkg_resources import parse_requirements,run_script
 import pathlib
 import os
+import setuptools
 
 
 setup(name='bol',
@@ -21,6 +22,7 @@ setup(name='bol',
         str(requirement) for requirement
             in parse_requirements(pathlib.Path('requirements.txt').open())
       ],
+      packages=setuptools.find_packages(),
       
 #       install_requires=[run_script(['fairseq'], 'bin/install.sh')],
       zip_safe=False)
