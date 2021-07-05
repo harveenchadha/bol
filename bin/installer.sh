@@ -5,7 +5,12 @@ sudo apt install build-essential cmake libboost-system-dev libboost-thread-dev l
 sudo apt-get install ffmpeg
 sudo apt-get install sox
 
-cd /usr/local/lib/python3.7/dist-packages
+pip install packaging soundfile
+#cd /usr/local/lib/python3.7/dist-packages
+#current_path=$PWD
+
+new_path=/tmp
+cd $new_path
 
 git clone https://github.com/kpu/kenlm.git
 cd kenlm
@@ -22,3 +27,4 @@ git clone https://github.com/flashlight/flashlight.git
 cd flashlight/bindings/python
 export USE_MKL=0
 python setup.py install
+
