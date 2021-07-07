@@ -46,9 +46,5 @@ class Wav2VecCtc(BaseFairseqModel):
 
 
 
-# def load_model_wav2vec(model_path):
-#     model =  torch.load(model_path)#,map_location=torch.device("cuda"))
-#     print("Model Loaded")
-#     return model
 
 
