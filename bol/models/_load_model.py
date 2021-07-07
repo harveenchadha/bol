@@ -71,7 +71,7 @@ class Wav2vec2(Model):
             text = get_results_for_single_file(wav_path, self.model_path+'/dict.ltr.txt', self.get_alternative_decoder(), self.get_model())
         else: 
             text = get_results_for_single_file(wav_path, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model())
-        print(text)
+        #print(text)
         return text
 
 
