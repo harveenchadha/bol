@@ -56,43 +56,38 @@ class Wav2vec2(Model):
             #     pickle.dump([self._decoder], output, pickle.HIGHEST_PROTOCOL)
 
         end = time.time()
-        print('Decoder Loaded in '+ str(end-start) + ' seconds')
+        # print('Decoder Loaded in '+ str(end-start) + ' seconds')
         self._alternative_decoder = load_decoder(model_path+'/dict.ltr.txt', model_path+'/lexicon.lst', model_path+'/lm.binary', 'viterbi')
         end_viterbi = time.time()
-
-        
-
-        print('Viterbi Loaded in '+ str(end_viterbi-end) + ' seconds')
+        # print('Viterbi Loaded in '+ str(end_viterbi-end) + ' seconds')
 
     def summary(self):
         print(self._model)
 
     def predict(self, wav_path, viterbi=False):
-        start = time.time()
-        # import glob
-        # from tqdm import tqdm
-        # files = glob.glob("../vak/hindi_test_dummy/*.wav")
-
-        # for wav_path in tqdm(files):
-
-        ### single file
-        # if viterbi:
-        #     text = get_results_for_single_file(wav_path, self.model_path+'/dict.ltr.txt', self.get_alternative_decoder(), self.get_model())
-        # else: 
-        #     text = get_results_for_single_file(wav_path, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model())
-
+        type_wav_path = check_if_prediction_is_wav_or_directory(wav_path)
+        if type_wav_path == 'file':
+            if viterbi:
+                text = get_results_for_single_file(wav_path, self.model_path+'/dict.ltr.txt', self.get_alternative_decoder(), self.get_model())
+            else: 
+                text = get_results_for_single_file(wav_path, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model())
         
-        w = Wav2VecDataLoader(16, 4 ,'../vak/hindi_test_dummy')
-        dataloader = w.get_train_data_loader()
-        #print(len(dataloader))
+        elif type_wav_path == 'dir':
+            dataloader_obj = Wav2VecDataLoader(train_batch_size = 4, num_workers= 4 ,file_data_path = wav_path)
+            dataloader = dataloader_obj.get_file_data_loader()
 
-        text = get_results_for_batch(dataloader, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model())
-        end = time.time()
+            if viterbi:
+                text = get_results_for_batch(dataloader, self.model_path+'/dict.ltr.txt', self.get_alternative_decoder(), self.get_model())
+            else:
+                text = get_results_for_batch(dataloader, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model())
 
-        print("Total time to predict " , str(end-start))
-
-        print(text)
         return text
+
+def check_if_prediction_is_wav_or_directory(wav_path):
+    if os.path.isfile(wav_path):
+        return 'file'
+    elif os.path.isdir(wav_path):
+        return 'dir'
 
 
 def check_if_required_files_exist(model_path):
@@ -132,7 +127,7 @@ def check_model_path(model_path, force_reload=False):
         
         full_path = base_path + '/' + model_path
         if os.path.exists(full_path):
-            print("Path already exists")
+            # print("Path already exists")
             # check if required files are present
             check_if_required_files_exist(full_path)
             return full_path
@@ -150,13 +145,8 @@ def check_model_path(model_path, force_reload=False):
     
 
 def load_model(model_path, type='wav2vec2'):
-
     path = check_model_path(model_path)
-
-
-
     if type=='wav2vec2':
         model = Wav2vec2(path)
-
         return model
     

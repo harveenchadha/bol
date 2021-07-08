@@ -19,9 +19,10 @@ def get_padding_mask(batch_sample):
     return torch.BoolTensor(batch_sample[0].size(1)).fill_(False)
 
 def get_batch_encoder_input(batch_samples):
-    features = [get_feature(batch_sample) for batch_sample in batch_samples]
+    features = [get_feature(batch_sample[0]) for batch_sample in batch_samples]
+    filenames = [filename[1] for filename in batch_samples]
     features = torch.nn.utils.rnn.pad_sequence(features, batch_first=True, padding_value=0)
-    return features
+    return features, filenames
 
 
 class Wav2VecDataset(Dataset):
@@ -33,7 +34,7 @@ class Wav2VecDataset(Dataset):
 
     def __getitem__(self, index):
         features = self._get_feature(self.audio_paths[index])
-        return features
+        return features, self.audio_paths[index]
 
     def _get_feature(self, filepath):
         wav, sample_rate = sf.read(filepath)
@@ -41,23 +42,23 @@ class Wav2VecDataset(Dataset):
         return wav    
 
 class Wav2VecDataLoader:
-    def __init__( self, train_batch_size, num_workers, train_data_path ):
+    def __init__( self, train_batch_size, num_workers, file_data_path ):
         self.train_batch_size = train_batch_size
         self.num_workers = num_workers
 
-        train_data_loader = self.create_data_loaders_from_train_dataset(train_data_path, train_batch_size, num_workers)
-        self.train_data_loader = train_data_loader
+        file_data_loader = self.create_data_loaders_from_train_dataset(file_data_path, train_batch_size, num_workers)
+        self.file_data_loader = file_data_loader
 
   
-    def create_data_loaders_from_train_dataset(self, train_data_path, train_batch_size, num_workers):
-        train_dataset = Wav2VecDataset(train_data_path)
-        train_data_loader = torch.utils.data.DataLoader(train_dataset,
+    def create_data_loaders_from_train_dataset(self, file_data_path, train_batch_size, num_workers):
+        train_dataset = Wav2VecDataset(file_data_path)
+        file_data_loader = torch.utils.data.DataLoader(train_dataset,
                                                         batch_size=train_batch_size,
                                                         shuffle=False,
                                                         num_workers=num_workers,
                                                         collate_fn=get_batch_encoder_input)
 
-        return train_data_loader
+        return file_data_loader
 
-    def get_train_data_loader(self):
-        return self.train_data_loader
+    def get_file_data_loader(self):
+        return self.file_data_loader
