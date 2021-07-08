@@ -1,11 +1,12 @@
 
 
 import torch
-from .. inference import load_decoder, get_results_for_single_file
+from .. inference import load_decoder, get_results_for_single_file, get_results_for_batch
 import time
 import os
 from os.path import expanduser
 import pickle
+from .. data import Wav2VecDataLoader
 
 class Model:
     def __init__(self):
@@ -67,11 +68,30 @@ class Wav2vec2(Model):
         print(self._model)
 
     def predict(self, wav_path, viterbi=False):
-        if viterbi:
-            text = get_results_for_single_file(wav_path, self.model_path+'/dict.ltr.txt', self.get_alternative_decoder(), self.get_model())
-        else: 
-            text = get_results_for_single_file(wav_path, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model())
-        #print(text)
+        start = time.time()
+        # import glob
+        # from tqdm import tqdm
+        # files = glob.glob("../vak/hindi_test_dummy/*.wav")
+
+        # for wav_path in tqdm(files):
+
+        ### single file
+        # if viterbi:
+        #     text = get_results_for_single_file(wav_path, self.model_path+'/dict.ltr.txt', self.get_alternative_decoder(), self.get_model())
+        # else: 
+        #     text = get_results_for_single_file(wav_path, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model())
+
+        
+        w = Wav2VecDataLoader(16, 4 ,'../vak/hindi_test_dummy')
+        dataloader = w.get_train_data_loader()
+        #print(len(dataloader))
+
+        text = get_results_for_batch(dataloader, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model())
+        end = time.time()
+
+        print("Total time to predict " , str(end-start))
+
+        print(text)
         return text
 
 
@@ -132,6 +152,9 @@ def check_model_path(model_path, force_reload=False):
 def load_model(model_path, type='wav2vec2'):
 
     path = check_model_path(model_path)
+
+
+
     if type=='wav2vec2':
         model = Wav2vec2(path)
 
