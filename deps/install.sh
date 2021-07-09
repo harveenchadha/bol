@@ -9,8 +9,11 @@ pip install packaging soundfile
 #cd /usr/local/lib/python3.7/dist-packages
 #current_path=$PWD
 
-new_path=/tmp
-cd $new_path
+new_path=/home/$USER
+installation_path=$new_path/.bol/files
+mkdir $installation_path
+
+cd $installation_path
 
 git clone https://github.com/kpu/kenlm.git
 cd kenlm
