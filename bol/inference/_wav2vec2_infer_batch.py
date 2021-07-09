@@ -7,6 +7,7 @@ from joblib import Parallel, delayed
 import time
 from joblib.externals.loky import set_loky_pickler
 from joblib import parallel_backend
+from bol.utils.helper_functions import move_to_cuda
 
 def post_process_sentence(sentence: str, symbol: str):
     if symbol == "sentencepiece":
@@ -30,37 +31,6 @@ def postprocess_features(feats, sample_rate):
     with torch.no_grad():
         feats = F.layer_norm(feats, feats.shape)
     return feats
-
-def apply_to_sample(f, sample):
-    if hasattr(sample, "__len__") and len(sample) == 0:
-        return {}
-
-    def _apply(x):
-        if torch.is_tensor(x):
-            return f(x)
-        elif isinstance(x, dict):
-            return {key: _apply(value) for key, value in x.items()}
-        elif isinstance(x, list):
-            return [_apply(x) for x in x]
-        elif isinstance(x, tuple):
-            return tuple(_apply(x) for x in x)
-        elif isinstance(x, set):
-            return {_apply(x) for x in x}
-        else:
-            return x
-
-    return _apply(sample)
-
-def move_to_cuda(sample, device=None):
-    device = device or torch.cuda.current_device()
-
-    def _move_to_cuda(tensor):
-        # non_blocking is ignored if tensor is not pinned, so we can always set
-        # to True (see github.com/PyTorchLightning/pytorch-lightning/issues/620)
-        return tensor.to(device=device, non_blocking=True)
-
-    return apply_to_sample(_move_to_cuda, sample)
-
 
 def process_batch_element(element, model, generator, target_dict, use_cuda=False, input_half=False):
     sample = dict()
@@ -95,7 +65,6 @@ def process_batch(batch,model,generator, target_dict, use_cuda, half):
     return prediction, filenames
 
 def get_results_for_batch(data_loader,dict_path,generator,model,use_cuda=False,w2v_path=None, half=None):
-    use_cuda=True
     predictions = []
     filenames = []
 

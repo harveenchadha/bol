@@ -1,12 +1,12 @@
 
 
 import torch
-from .. inference import load_decoder, get_results_for_single_file, get_results_for_batch
+from bol.inference import load_decoder, get_results_for_single_file, get_results_for_batch
 import time
 import os
 from os.path import expanduser
 import pickle
-from .. data import Wav2VecDataLoader
+from bol.data import Wav2VecDataLoader
 
 class Model:
     def __init__(self):
@@ -21,18 +21,25 @@ class Model:
 
 class Wav2vec2(Model):
     
-    def __init__(self, model_path):
+    def __init__(self, model_path, use_cuda=False):
         #super().__init__()
         self.model_path = model_path
         self._alternative_decoder = 'viterbi'
-        self.load_model(model_path)
+        self.load_model(model_path, use_cuda)
         self.load_decoder(model_path)
 
     def get_model(self):
         return self._model
 
-    def load_model(self, model_path):   
-        self._model = torch.load(model_path+'/hindi.pt', map_location=torch.device('cuda'))
+    def load_model(self, model_path, use_cuda=False):
+        if torch.cuda.is_available():
+            if use_cuda:   
+                self._model = torch.load(model_path+'/hindi.pt', map_location=torch.device('cuda'))
+            else:
+                self._model = torch.load(model_path+'/hindi.pt')
+        else:
+            self._model = torch.load(model_path+'/hindi.pt')
+
         print('Model Loaded')
 
     def get_decoder(self):
