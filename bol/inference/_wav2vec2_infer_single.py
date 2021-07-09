@@ -32,7 +32,40 @@ def post_process(sentence: str, symbol: str):
         sentence = (sentence + " ").replace(symbol, "").rstrip()
     return sentence
 
+
+def apply_to_sample(f, sample):
+    if hasattr(sample, "__len__") and len(sample) == 0:
+        return {}
+
+    def _apply(x):
+        if torch.is_tensor(x):
+            return f(x)
+        elif isinstance(x, dict):
+            return {key: _apply(value) for key, value in x.items()}
+        elif isinstance(x, list):
+            return [_apply(x) for x in x]
+        elif isinstance(x, tuple):
+            return tuple(_apply(x) for x in x)
+        elif isinstance(x, set):
+            return {_apply(x) for x in x}
+        else:
+            return x
+
+    return _apply(sample)
+
+def move_to_cuda(sample, device=None):
+    device = device or torch.cuda.current_device()
+
+    def _move_to_cuda(tensor):
+        # non_blocking is ignored if tensor is not pinned, so we can always set
+        # to True (see github.com/PyTorchLightning/pytorch-lightning/issues/620)
+        return tensor.to(device=device, non_blocking=True)
+
+    return apply_to_sample(_move_to_cuda, sample)
+
+
 def get_results_for_single_file(wav_path,dict_path,generator,model,use_cuda=False,w2v_path=None, half=None):
+    use_cuda=True
     sample = dict()
     net_input = dict()
     feature = get_feature(wav_path)
@@ -49,7 +82,7 @@ def get_results_for_single_file(wav_path,dict_path,generator,model,use_cuda=Fals
 
     net_input["padding_mask"] = padding_mask
     sample["net_input"] = net_input
-    sample = utils.move_to_cuda(sample) if use_cuda else sample
+    sample = move_to_cuda(sample) if use_cuda else sample
 
     with torch.no_grad():
         hypo = generator.generate(model, sample, prefix_tokens=None)

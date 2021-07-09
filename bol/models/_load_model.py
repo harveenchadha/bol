@@ -32,7 +32,7 @@ class Wav2vec2(Model):
         return self._model
 
     def load_model(self, model_path):   
-        self._model = torch.load(model_path+'/hindi.pt')
+        self._model = torch.load(model_path+'/hindi.pt', map_location=torch.device('cuda'))
         print('Model Loaded')
 
     def get_decoder(self):

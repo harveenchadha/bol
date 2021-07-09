@@ -18,6 +18,8 @@ def get_feature(batch_sample):
 def get_padding_mask(batch_sample):
     return torch.BoolTensor(batch_sample[0].size(1)).fill_(False)
 
+
+
 def get_batch_encoder_input(batch_samples):
     features = [get_feature(batch_sample[0]) for batch_sample in batch_samples]
     filenames = [filename[1] for filename in batch_samples]
@@ -39,6 +41,7 @@ class Wav2VecDataset(Dataset):
     def _get_feature(self, filepath):
         wav, sample_rate = sf.read(filepath)
         wav = torch.from_numpy(wav).float()
+        #wav = wav.to('cuda')
         return wav    
 
 class Wav2VecDataLoader:
