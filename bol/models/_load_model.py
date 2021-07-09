@@ -7,6 +7,7 @@ import os
 from os.path import expanduser
 import pickle
 from bol.data import Wav2VecDataLoader
+from bol.utils.helper_functions import validate_file 
 
 class Model:
     def __init__(self):
@@ -63,7 +64,7 @@ class Wav2vec2(Model):
             #     pickle.dump([self._decoder], output, pickle.HIGHEST_PROTOCOL)
 
         end = time.time()
-        # print('Decoder Loaded in '+ str(end-start) + ' seconds')
+        print('Decoder Loaded in '+ str(end-start) + ' seconds')
         self._alternative_decoder = load_decoder(model_path+'/dict.ltr.txt', model_path+'/lexicon.lst', model_path+'/lm.binary', 'viterbi')
         end_viterbi = time.time()
         # print('Viterbi Loaded in '+ str(end_viterbi-end) + ' seconds')
@@ -71,30 +72,35 @@ class Wav2vec2(Model):
     def summary(self):
         print(self._model)
 
-    def predict(self, wav_path, viterbi=False):
-        type_wav_path = check_if_prediction_is_wav_or_directory(wav_path)
-        if type_wav_path == 'file':
+    def predict(self, file_path, viterbi=False):
+        type_file_path = check_if_prediction_is_wav_or_directory(file_path)
+        text = ''
+        if type_file_path == 'file':
+            file_path = validate_file(file_path)
+            print(file_path)
             if viterbi:
-                text = get_results_for_single_file(wav_path, self.model_path+'/dict.ltr.txt', self.get_alternative_decoder(), self.get_model())
+                text = get_results_for_single_file(file_path, self.model_path+'/dict.ltr.txt', self.get_alternative_decoder(), self.get_model())
             else: 
-                text = get_results_for_single_file(wav_path, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model())
+                text = get_results_for_single_file(file_path, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model())
         
-        elif type_wav_path == 'dir':
-            dataloader_obj = Wav2VecDataLoader(train_batch_size = 4, num_workers= 4 ,file_data_path = wav_path)
+        elif type_file_path == 'dir':
+            dataloader_obj = Wav2VecDataLoader(train_batch_size = 4, num_workers= 4 ,file_data_path = file_path)
             dataloader = dataloader_obj.get_file_data_loader()
 
             if viterbi:
                 text = get_results_for_batch(dataloader, self.model_path+'/dict.ltr.txt', self.get_alternative_decoder(), self.get_model())
             else:
                 text = get_results_for_batch(dataloader, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model())
-
+        print(text)
         return text
 
-def check_if_prediction_is_wav_or_directory(wav_path):
-    if os.path.isfile(wav_path):
+def check_if_prediction_is_wav_or_directory(file_path):
+    if os.path.isfile(file_path):
         return 'file'
-    elif os.path.isdir(wav_path):
+    elif os.path.isdir(file_path):
         return 'dir'
+    else:
+        raise Exception("Not a valid file or directory")
 
 
 def check_if_required_files_exist(model_path):
@@ -156,4 +162,4 @@ def load_model(model_path, type='wav2vec2'):
     if type=='wav2vec2':
         model = Wav2vec2(path)
         return model
-    
+

@@ -2,3 +2,4 @@
 fairseq @ git+https://github.com/Open-Speech-EkStep/fairseq@v2-hydra#egg=fairseq
 ffmpeg-python
 sox
+pydub

@@ -5,6 +5,7 @@ from fairseq.dataclass.utils import convert_namespace_to_omegaconf
 from fairseq import utils
 import torch
 
+
 class Wav2VecCtc(BaseFairseqModel):
     def __init__(self, cfg: Wav2Vec2CtcConfig, w2v_encoder: BaseFairseqModel):
         super().__init__()
