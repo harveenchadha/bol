@@ -29,7 +29,7 @@ def get_batch_encoder_input(batch_samples):
 
 class Wav2VecDataset(Dataset):
     def __init__(self, audio_path):
-        self.audio_paths = glob.glob(audio_path + '/**/*.wav', recursive=True)
+        self.audio_paths = glob.glob(audio_path + '/**/*.wav', recursive=True)[0:50]
 
     def __len__(self):
         return len(self.audio_paths)

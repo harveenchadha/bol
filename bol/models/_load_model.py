@@ -8,6 +8,7 @@ from os.path import expanduser
 import pickle
 from bol.data import Wav2VecDataLoader
 from bol.utils.helper_functions import validate_file 
+from bol.metrics import calculate_metrics_for_single_file, calculate_metrics_for_batch
 
 class Model:
     def __init__(self):
@@ -82,6 +83,8 @@ class Wav2vec2(Model):
                 text = get_results_for_single_file(file_path, self.model_path+'/dict.ltr.txt', self.get_alternative_decoder(), self.get_model())
             else: 
                 text = get_results_for_single_file(file_path, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model())
+
+#            text = [(file_path, text)]
         
         elif type_file_path == 'dir':
             dataloader_obj = Wav2VecDataLoader(train_batch_size = 4, num_workers= 4 ,file_data_path = file_path)
@@ -93,6 +96,23 @@ class Wav2vec2(Model):
                 text = get_results_for_batch(dataloader, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model())
         print(text)
         return text
+
+    def evaluate(self, file_path, txt_path, viterbi=False):
+        predicted_text = self.predict(file_path, viterbi)
+
+        type_file_path = check_if_prediction_is_wav_or_directory(file_path)
+
+        if not txt_path:
+            txt_path = file_path
+
+        if type_file_path == 'file':
+            # open txt file
+            wer, cer = calculate_metrics_for_single_file(txt_path, predicted_text)
+        elif type_file_path == 'dir':
+            wer, cer = calculate_metrics_for_batch(txt_path, predicted_text)
+            
+
+        return wer, cer
 
 def check_if_prediction_is_wav_or_directory(file_path):
     if os.path.isfile(file_path):

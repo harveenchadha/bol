@@ -76,3 +76,9 @@ def validate_file(file_path):
 
 def get_directory_report():
     pass
+
+
+def read_txt_file(txt_path):
+     with open(txt_path, mode='r', encoding='utf-8') as file:
+        text = file.read()
+        return text

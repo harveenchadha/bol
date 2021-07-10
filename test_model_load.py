@@ -9,9 +9,14 @@ if __name__ == "__main__":
     model = load_model('hi')
     
     ## test single file
-    text = model.predict('../files/common_voice.mp3')
-    with open('file_test.txt', mode='w+', encoding='utf-8') as file:
-        file.writelines(text)
+    # text = model.predict('../files/2_chunk-160.wav')
+    # wer, cer = model.evaluate('../files/2_chunk-160.wav', '../files/2_chunk-160.txt')
+    # print("WER: ", wer)
+    # print("CER: ", cer)
+    # with open('file_test.txt', mode='w+', encoding='utf-8') as file:
+    #     file.writelines(text)
+
+
 
     # ## test batch
     # text = model.predict('../vak/hindi_test_dummy')
@@ -23,6 +28,10 @@ if __name__ == "__main__":
     # with open('file_test.txt', mode='w+', encoding='utf-8') as file:
     #     file.writelines("\n".join(local_text))
 
+
+    wer, cer = model.evaluate('../dev', '../dev', viterbi=True)
+    print("WER: ", wer)
+    print("CER: ", cer)
 
 
     # model.summary()
