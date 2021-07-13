@@ -83,7 +83,7 @@ class W2lDecoder(object):
             if hasattr(model, "get_logits"):
                 emissions = model.get_logits(encoder_out) # no need to normalize emissions
             else:
-                emissions = model.get_normalized_probs(encoder_out, log_probs=True)
+                emissions = model.module.get_normalized_probs(encoder_out, log_probs=True) ## to run on multiple GPU
         elif self.criterion_type == CriterionType.ASG:
             emissions = encoder_out["encoder_out"]
         return emissions.transpose(0, 1).float().cpu().contiguous()

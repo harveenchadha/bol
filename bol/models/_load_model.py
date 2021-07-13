@@ -1,6 +1,7 @@
 
 
 import torch
+import torch.nn as nn
 from bol.inference import load_decoder, get_results_for_single_file, get_results_for_batch
 import time
 import os
@@ -8,7 +9,7 @@ from os.path import expanduser
 import pickle
 from bol.data import Wav2VecDataLoader
 from bol.utils.helper_functions import validate_file 
-from bol.metrics import calculate_metrics_for_single_file, calculate_metrics_for_batch
+from bol.metrics import calculate_metrics_for_single_file, calculate_metrics_for_batch, wer, cer
 
 class Model:
     def __init__(self):
@@ -23,26 +24,37 @@ class Model:
 
 class Wav2vec2(Model):
     
-    def __init__(self, model_path, use_cuda=False):
+    def __init__(self, model_path, use_cuda_if_available=True):
         #super().__init__()
         self.model_path = model_path
         self._alternative_decoder = 'viterbi'
-        self.load_model(model_path, use_cuda)
+        self.use_cuda_if_available = use_cuda_if_available
+        self.device = 'cpu'
+        self.load_model(model_path, use_cuda_if_available)
         self.load_decoder(model_path)
 
     def get_model(self):
         return self._model
 
-    def load_model(self, model_path, use_cuda=False):
-        if torch.cuda.is_available():
-            if use_cuda:   
-                self._model = torch.load(model_path+'/hindi.pt', map_location=torch.device('cuda'))
-            else:
-                self._model = torch.load(model_path+'/hindi.pt')
+    
+#    def load_model(self, model_path, load_kenlm=True, force_download=False, use_cuda_if_available=True, language_model_params= {}, donwload_without_lm = False )
+
+    def load_model(self, model_path, use_cuda_if_available=True):
+        if torch.cuda.is_available() and use_cuda_if_available:
+            self._model = torch.load(model_path+'/hindi.pt', map_location=torch.device('cuda'))
+            self.use_cuda_if_available = True
+            print("Model loaded on GPUs")
         else:
             self._model = torch.load(model_path+'/hindi.pt')
+            self.use_cuda_if_available = False
+            print('Model Loaded on CPU')
 
-        print('Model Loaded')
+        if torch.cuda.device_count() > 1:
+            self._model = nn.DataParallel(self._model)
+        # else:
+        #     self._model = torch.load(model_path+'/hindi.pt')
+
+        #print('Model Loaded')
 
     def get_decoder(self):
         return self._decoder
@@ -73,7 +85,7 @@ class Wav2vec2(Model):
     def summary(self):
         print(self._model)
 
-    def predict(self, file_path, viterbi=False):
+    def predict(self, file_path, viterbi=False, return_filenames = False):
         type_file_path = check_if_prediction_is_wav_or_directory(file_path)
         text = ''
         if type_file_path == 'file':
@@ -87,18 +99,48 @@ class Wav2vec2(Model):
 #            text = [(file_path, text)]
         
         elif type_file_path == 'dir':
-            dataloader_obj = Wav2VecDataLoader(train_batch_size = 4, num_workers= 4 ,file_data_path = file_path)
+            dataloader_obj = Wav2VecDataLoader(train_batch_size = 8, num_workers= 4 ,file_data_path = file_path)
             dataloader = dataloader_obj.get_file_data_loader()
 
             if viterbi:
-                text = get_results_for_batch(dataloader, self.model_path+'/dict.ltr.txt', self.get_alternative_decoder(), self.get_model())
+                text = get_results_for_batch(dataloader, self.model_path+'/dict.ltr.txt', self.get_alternative_decoder(), self.get_model(),  self.use_cuda_if_available)
             else:
-                text = get_results_for_batch(dataloader, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model())
-        print(text)
+                text = get_results_for_batch(dataloader, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model(), self.use_cuda_if_available)
+        #print(text)
+
+        if return_filenames:
+            if type_file_path=='file':
+                return [(file_path, text)]
+            elif type_file_path=='dir':
+                return text
+        else:
+            if type_file_path=='file':
+                return text
+            elif type_file_path=='dir':
+                only_preds = []
+                for item in text:
+                    # for file_name, local_text in item:
+                    only_preds.append(item[1])
+                text = only_preds
         return text
 
-    def evaluate(self, file_path, txt_path, viterbi=False):
-        predicted_text = self.predict(file_path, viterbi)
+    def evaluate(self, ground_truth, predictions,metrics=['wer','cer']):
+        metrics = [metric.lower() for metric in metrics]
+        dict_metrics = {}
+        if 'wer' in metrics:
+            calculated_wer = wer(ground_truth, predictions)
+            dict_metrics['wer'] = calculated_wer
+
+        if 'cer' in metrics:
+            calculated_cer = cer(ground_truth, predictions)
+            dict_metrics['cer'] = calculated_cer
+        
+        return dict_metrics
+        #print(calculated_wer)
+        #wer, cer = calculate_metrics_for_batch()
+
+    def predict_evaluate(self, file_path, txt_path=None, viterbi=False, metrics=['wer','cer']):
+        predicted_text = self.predict(file_path, viterbi, return_filenames=True)
 
         type_file_path = check_if_prediction_is_wav_or_directory(file_path)
 
@@ -182,4 +224,3 @@ def load_model(model_path, type='wav2vec2'):
     if type=='wav2vec2':
         model = Wav2vec2(path)
         return model
-

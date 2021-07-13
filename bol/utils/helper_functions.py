@@ -3,6 +3,7 @@ from tempfile import NamedTemporaryFile
 import subprocess
 import sox
 import os
+import torch
 
 def apply_to_sample(f, sample):
     if hasattr(sample, "__len__") and len(sample) == 0:

@@ -32,8 +32,7 @@ def calculate_metrics_for_batch(txt_dir, preds):
         num_tokens.append(len(ground_truth.split()))
         num_chars.append(len(ground_truth.replace(' ','')))
 
-    print(fwer)
-    print(fcer)
+    
     wer = sum(fwer) / sum(num_tokens) * 100
     cer = sum(fcer) / sum(num_chars) * 100
     return wer, cer

@@ -1,5 +1,6 @@
 
 from bol.models import load_model, Wav2VecCtc
+import glob
 
 if __name__ == "__main__":
     #model = load_model('../files')
@@ -18,20 +19,35 @@ if __name__ == "__main__":
 
 
 
-    # ## test batch
-    # text = model.predict('../vak/hindi_test_dummy')
+    ## test batch
+    text = model.predict('../dev')
+
+    ground_truth_files = glob.glob('../dev/*.txt')[0:10]
+    ground_truth = []
+    for file in ground_truth_files:
+        with open(file, encoding='utf-8' ) as local_file:
+            ground_truth.append(local_file.read())
+
+    with open('file_gt.txt', mode='w+', encoding='utf-8') as file:
+        file.writelines("\n".join(ground_truth))
+        
+    met = model.evaluate(ground_truth=ground_truth, predictions = text)
+    print(met)
+
+    wer, cer = model.predict_evaluate('../dev')
+    print(wer, cer)
     # local_text = []
     # for item in text:
     #     for local_item in item:
     #         local_text.append(local_item)
 
-    # with open('file_test.txt', mode='w+', encoding='utf-8') as file:
-    #     file.writelines("\n".join(local_text))
+    with open('file_test.txt', mode='w+', encoding='utf-8') as file:
+        file.writelines("\n".join(text))
 
 
-    wer, cer = model.evaluate('../dev', '../dev', viterbi=True)
-    print("WER: ", wer)
-    print("CER: ", cer)
+    # wer, cer = model.evaluate('../dev', '../dev')
+    # print("WER: ", wer)
+    # print("CER: ", cer)
 
 
     # model.summary()

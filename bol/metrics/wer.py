@@ -1,7 +1,7 @@
 
 import Levenshtein as Lev
 
-def wer( s1, s2):
+def wer_single( s1, s2):
         """
         Computes the Word Error Rate, defined as the edit distance between the
         two provided sentences after tokenizing to words.
@@ -25,7 +25,20 @@ def wer( s1, s2):
 def calculate_wer(source, target):
     wer_local = ''
     try:
-        wer_local = wer(source, target)
+        wer_local = wer_single(source, target)
     except:
+        print(source)
         return len(source.split(' '))
     return wer_local
+
+
+def wer(ground_truth, predictions):
+    num_tokens = []
+    fwer = []
+    for gt, pred in zip(ground_truth, predictions):
+        fwer.append( wer_single(gt,pred) )
+        num_tokens.append( len(gt.split()) )
+    
+    wer = sum(fwer) / sum(num_tokens) * 100
+    
+    return wer
