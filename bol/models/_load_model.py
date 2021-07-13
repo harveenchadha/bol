@@ -10,6 +10,9 @@ import pickle
 from bol.data import Wav2VecDataLoader
 from bol.utils.helper_functions import validate_file 
 from bol.metrics import calculate_metrics_for_single_file, calculate_metrics_for_batch, wer, cer
+from torch.nn.parallel import DistributedDataParallel as DDP
+import torch.multiprocessing as mp
+import torch.distributed as dist
 
 class Model:
     def __init__(self):
@@ -39,6 +42,39 @@ class Wav2vec2(Model):
     
 #    def load_model(self, model_path, load_kenlm=True, force_download=False, use_cuda_if_available=True, language_model_params= {}, donwload_without_lm = False )
 
+    def setup(self, rank, world_size):
+        os.environ['MASTER_ADDR'] = 'localhost'
+        os.environ['MASTER_PORT'] = '12355'
+
+        # initialize the process group
+        dist.init_process_group("gloo", rank=rank, world_size=world_size)
+
+    def cleanup(self):
+        dist.destroy_process_group()
+
+
+
+
+    def run_demo(self,demo_fn, world_size):
+        mp.spawn(demo_fn,
+                args=(world_size,),
+                nprocs=world_size,
+                join=True)
+
+
+
+
+    def demo_basic(self,rank, world_size):
+        print(f"Running basic DDP example on rank {rank}.")
+        self.setup(rank, world_size)
+
+        # create model and move it to GPU with id rank
+        self._model = self._model.to(rank)
+        self._model = DDP(self._model, device_ids=[rank])
+        self.cleanup()
+
+
+
     def load_model(self, model_path, use_cuda_if_available=True):
         if torch.cuda.is_available() and use_cuda_if_available:
             self._model = torch.load(model_path+'/hindi.pt', map_location=torch.device('cuda'))
@@ -51,6 +87,9 @@ class Wav2vec2(Model):
 
         if torch.cuda.device_count() > 1:
             self._model = nn.DataParallel(self._model)
+
+            #self.run_demo(self.demo_basic, 2)
+
         # else:
         #     self._model = torch.load(model_path+'/hindi.pt')
 
@@ -99,13 +138,15 @@ class Wav2vec2(Model):
 #            text = [(file_path, text)]
         
         elif type_file_path == 'dir':
-            dataloader_obj = Wav2VecDataLoader(train_batch_size = 8, num_workers= 4 ,file_data_path = file_path)
+            dataloader_obj = Wav2VecDataLoader(train_batch_size = 4, num_workers= 4 ,file_data_path = file_path)
             dataloader = dataloader_obj.get_file_data_loader()
 
             if viterbi:
                 text = get_results_for_batch(dataloader, self.model_path+'/dict.ltr.txt', self.get_alternative_decoder(), self.get_model(),  self.use_cuda_if_available)
             else:
+
                 text = get_results_for_batch(dataloader, self.model_path+'/dict.ltr.txt', self.get_decoder(), self.get_model(), self.use_cuda_if_available)
+                #self.cleanup()
         #print(text)
 
         if return_filenames:
@@ -224,3 +265,7 @@ def load_model(model_path, type='wav2vec2'):
     if type=='wav2vec2':
         model = Wav2vec2(path)
         return model
+
+
+
+
