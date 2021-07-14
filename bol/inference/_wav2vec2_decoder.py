@@ -9,6 +9,7 @@ from fairseq.models import BaseFairseqModel
 from fairseq.data import Dictionary
 from fairseq.models.wav2vec.wav2vec2_asr import Wav2VecEncoder, Wav2Vec2CtcConfig
 from fairseq.dataclass.utils import convert_namespace_to_omegaconf
+from typing import List
 
 try:
     from flashlight.lib.text.dictionary import create_word_dict, load_words
@@ -126,6 +127,7 @@ class W2lViterbiDecoder(W2lDecoder):
             for b in range(B)
         ]
 
+import time
 
 class W2lKenLMDecoder(W2lDecoder):
     def __init__(self, args, tgt_dict):
@@ -137,10 +139,8 @@ class W2lKenLMDecoder(W2lDecoder):
             self.lexicon = load_words(args['lexicon'])
             self.word_dict = create_word_dict(self.lexicon)
             self.unk_word = self.word_dict.get_index("<unk>")
-
             self.lm = KenLM(args['kenlm_model'], self.word_dict)
             self.trie = Trie(self.vocab_size, self.silence)
-
             start_state = self.lm.start(False)
             for i, (word, spellings) in enumerate(self.lexicon.items()):
                 word_idx = self.word_dict.get_index(word)
@@ -201,6 +201,25 @@ class W2lKenLMDecoder(W2lDecoder):
             )
 
 
+    def get_timesteps(self, token_idxs: List[int]) -> List[int]:
+        """Returns frame numbers corresponding to every non-blank token.
+        Parameters
+        ----------
+        token_idxs : List[int]
+            IDs of decoded tokens.
+        Returns
+        -------
+        List[int]
+            Frame numbers corresponding to every non-blank token.
+        """
+        timesteps = []
+        for i, token_idx in enumerate(token_idxs):
+            if token_idx == self.blank:
+                continue
+            if i == 0 or token_idx != token_idxs[i-1]:
+                timesteps.append((i, token_idx))
+        return timesteps
+
     def decode(self, emissions):
         B, T, N = emissions.size()
         hypos = []
@@ -214,6 +233,7 @@ class W2lKenLMDecoder(W2lDecoder):
                     {
                         "tokens": self.get_tokens(result.tokens),
                         "score": result.score,
+                        "timesteps": self.get_timesteps(result.tokens),
                         "words": [
                             self.word_dict.get_entry(x) for x in result.words if x >= 0
                         ],

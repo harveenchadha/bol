@@ -56,7 +56,10 @@ def process_batch_element(element, model, generator, target_dict, use_cuda=False
     hyp_pieces = [target_dict.string(item[0]["tokens"].int().cpu()) for item in hypo]
     prediction = [post_process_sentence(item, 'letter') for item in hyp_pieces]
     
-    return prediction
+    
+    # timesteps = [item[0]["timesteps"] for item in hypo]
+    # score = [item[0]["score"] for item in hypo]
+    return prediction#, timesteps, score
 
 
 def process_batch(batch,model,generator, target_dict, use_cuda, half):
@@ -68,6 +71,7 @@ def get_results_for_batch(data_loader,dict_path,generator,model,use_cuda=False,w
     predictions = []
     filenames = []
 
+
     model.eval()
     target_dict = Dictionary.load(dict_path)
 
@@ -75,7 +79,6 @@ def get_results_for_batch(data_loader,dict_path,generator,model,use_cuda=False,w
         prediction, filename = process_batch(batch, model=model, generator=generator, target_dict=target_dict, use_cuda=use_cuda, half=half)
         predictions.append(prediction)
         filenames.append(filename)
-    
     local_dict = []
     for pred, file in zip(predictions, filenames):
         for local_pred, local_file in zip(pred, file):
