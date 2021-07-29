@@ -43,7 +43,12 @@ def _download(full_path, urls, download_type):
             os.system(wget_cmd)
             os.system(unzip_cmd)
             os.system(remove_cmd)
-
+        if filename[-3:] == '.xz':
+            unzip_cmd = 'tar -xvf ' + full_path+'/' + filename + ' -C ' +full_path + ' --strip-components=3'
+            remove_cmd = 'rm ' + full_path+'/' + filename
+            os.system(wget_cmd)
+            os.system(unzip_cmd)
+            os.system(remove_cmd)
  
 
 def _get_names_of_model_files(path):

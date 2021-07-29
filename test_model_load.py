@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
 
 
-    model = load_model('hi-IN')
+    model = load_model('en-IN')
     
     ## test single file
     # text = model.predict('../files/2_chunk-160.wav')
@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
 
     ## test batch
-    text = model.predict('../dev', return_filenames=True)
+    text = model.predict('../dev',  return_filenames=True)
     local_text = []
     for item in text:
         for local_item in item:
