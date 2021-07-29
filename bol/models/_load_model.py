@@ -154,9 +154,9 @@ class Wav2vec2(Model):
         if type_file_path == 'file':
             file_path = validate_file(file_path)
             if viterbi:
-                text = get_results_for_single_file(file_path, self.dict_path, self.get_alternative_decoder(), self.get_model())
+                text = get_results_for_single_file(file_path, self.dict_path, self.get_alternative_decoder(), self.get_model(), self.use_cuda_if_available)
             else: 
-                text = get_results_for_single_file(file_path, self.dict_path, self.get_decoder(), self.get_model())
+                text = get_results_for_single_file(file_path, self.dict_path, self.get_decoder(), self.get_model(), self.use_cuda_if_available)
 
 #            text = [(file_path, text)]
         

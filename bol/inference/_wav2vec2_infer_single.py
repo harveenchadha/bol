@@ -35,7 +35,7 @@ def post_process(sentence: str, symbol: str):
 
 
 
-def get_results_for_single_file(wav_path,dict_path,generator,model,use_cuda=False,w2v_path=None, half=None):
+def get_results_for_single_file(wav_path,dict_path,generator,model,use_cuda=False, half=None):
     sample = dict()
     net_input = dict()
     feature = get_feature(wav_path)
