@@ -53,12 +53,11 @@ def _get_names_of_model_files(path):
     if not model_path or not dict_path:
         return None, None
 
-    print(dict_path, model_path)
     return model_path[0], dict_path[0]
 
 def _check_if_required_files_exist(model_path):    
     model_path, dict_path = _get_names_of_model_files(model_path)
-    print(model_path, dict_path)
+
     if not model_path or not dict_path:
         return False
     else:
@@ -80,9 +79,9 @@ def _check_if_model_exists(model_code, urls):
         return full_path
 
 def _delete_model_files(full_path):
-    # cmd = 'rm -rf '+ full_path
-    # os.system(cmd)
-    os.rmdir(full_path)
+    cmd = 'rm -rf '+ full_path
+    os.system(cmd)
+    #os.rmdir(full_path)
 
     
 def verify_model_mapping(model_code, force_download):

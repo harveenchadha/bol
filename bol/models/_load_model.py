@@ -99,7 +99,7 @@ class Wav2vec2(Model):
 
         """
         
-        if torch.cuda.is_available() and use_cuda_if_available:
+        if torch.cuda.is_available() and self.use_cuda_if_available:
             self.use_cuda_if_available = True
             self._model = torch.load(self.model_path, map_location=torch.device('cuda'))
             print("Model loaded on GPUs")
@@ -133,8 +133,7 @@ class Wav2vec2(Model):
         #         decoder = pickle.load(input)
         #         self._decoder = decoder
         # else:    
-        print(self.lexicon_path)
-        print(self.lm_path)         
+     
         self._decoder = load_decoder(self.dict_path, self.lexicon_path, self.lm_path, 'kenlm')
 
             # with open(model_path  + '/kenlm_decoder.pkl', 'wb') as output:
@@ -154,7 +153,6 @@ class Wav2vec2(Model):
         text = ''
         if type_file_path == 'file':
             file_path = validate_file(file_path)
-            print(file_path)
             if viterbi:
                 text = get_results_for_single_file(file_path, self.dict_path, self.get_alternative_decoder(), self.get_model())
             else: 
@@ -252,7 +250,7 @@ def load_model( model_code= None,
 
     if model_code:
         ## check string mapping to available bol models
-        force_download=True
+        #force_download=True
         model_path, dict_path = verify_model_mapping(model_code, force_download)
 
     elif model_path:
