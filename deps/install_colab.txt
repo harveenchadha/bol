@@ -1,0 +1,31 @@
+
+!apt-get -y install liblzma-dev libbz2-dev libzstd-dev libsndfile1-dev libopenblas-dev libfftw3-dev libgflags-dev libgoogle-glog-dev
+!apt -y install build-essential cmake libboost-system-dev libboost-thread-dev libboost-program-options-dev libboost-test-dev libeigen3-dev zlib1g-dev libbz2-dev 
+!apt-get -y install ffmpeg
+!pip install ffmpeg-python
+!apt-get -y install sox
+!pip install sox
+
+!pip install git+https://github.com/Open-Speech-EkStep/fairseq.git@v2-hydra
+
+
+
+
+import os
+HOME_DIR_PATH=os.path.abspath(".")
+
+!git clone https://github.com/kpu/kenlm.git
+os.chdir("kenlm")
+!git checkout 4a277534fd33da323205e6ec256e8fd0ff6ee6fa
+!mkdir -p build 
+os.chdir("build")
+!cmake .. 
+!make -j16
+os.environ['KENLM_ROOT'] = os.path.join(HOME_DIR_PATH,"kenlm")
+os.chdir(HOME_DIR_PATH)
+
+
+!git clone https://github.com/flashlight/flashlight.git
+os.chdir("flashlight/bindings/python")
+os.environ['USE_MKL']="0"
+!pip install -e .
