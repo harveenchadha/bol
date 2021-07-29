@@ -272,7 +272,7 @@ def load_model( model_code= None,
 
 #    path = check_model_path(model_path)
     if backend=='wav2vec2':
-        model = Wav2vec2(model_path, dict_path, lm_path, lexicon_path)
+        model = Wav2vec2(model_path, dict_path, lm_path, lexicon_path, use_cuda_if_available)
         return model
 
 
