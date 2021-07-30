@@ -5,8 +5,7 @@ import torch.nn as nn
 from bol.inference import load_decoder, get_results_for_single_file, get_results_for_batch
 import time
 import os
-from os.path import expanduser
-import pickle
+
 from bol.data import Wav2VecDataLoader
 from bol.utils.helper_functions import validate_file 
 from bol.metrics import calculate_metrics_for_single_file, calculate_metrics_for_batch, wer, cer
@@ -39,6 +38,8 @@ class Wav2vec2(Model):
         self.load_model()
         if lm_path and lexicon_path:
             self.load_decoder()
+        else:
+            self._decoder = load_decoder(self.dict_path, '', '', 'viterbi')
 
     def get_model(self):
         return self._model

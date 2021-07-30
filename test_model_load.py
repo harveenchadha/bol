@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
 
 
-    model = load_model('en-IN')
+    model = load_model('en-IN',use_lm=True)
     
     ## test single file
     # text = model.predict('../files/2_chunk-160.wav')
