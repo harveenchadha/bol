@@ -2,6 +2,8 @@
 
 MODEL_MAPPING={
     'hi-IN' : { 'lang_code':'hi-IN',
+                'backend' : 'fairseq',
+                'algo':'wav2vec2',
                 'description':'Hindi bol model',
                 'provider':'ekstep',
                 'urls':{
@@ -11,6 +13,8 @@ MODEL_MAPPING={
               },
 
     'bn-IN' : { 'lang_code':'bn-IN',
+                'backend' : 'fairseq',
+                'algo':'wav2vec2',
                 'description':'Bengali bol model',
                 'provider':'ekstep',
                 'urls':{
@@ -21,6 +25,8 @@ MODEL_MAPPING={
 
 
     'en-IN' : { 'lang_code':'en-IN',
+                'backend' : 'fairseq',
+                'algo':'wav2vec2',
                 'description':'Indian English bol model',
                 'provider':'ekstep',
                 'urls':{
@@ -31,6 +37,8 @@ MODEL_MAPPING={
 
 
     'gu-IN' : { 'lang_code':'gu-IN',
+                'backend' : 'fairseq',
+                'algo':'wav2vec2',
                 'description':'Gujarati bol model',
                 'provider':'ekstep',
                 'urls':{
@@ -41,6 +49,8 @@ MODEL_MAPPING={
 
 
     'kn-IN' : { 'lang_code':'kn-IN',
+                'backend' : 'fairseq',
+                'algo':'wav2vec2',
                 'description':'Kannada bol model',
                 'provider':'ekstep',
                 'urls':{
@@ -51,6 +61,8 @@ MODEL_MAPPING={
 
 
     'ne-IN' : { 'lang_code':'ne-IN',
+                'backend' : 'fairseq',
+                'algo':'wav2vec2',
                 'description':'Nepali bol model',
                 'provider':'ekstep',
                 'urls':{
@@ -61,6 +73,8 @@ MODEL_MAPPING={
 
 
     'ta-IN' : { 'lang_code':'ta-IN',
+                'backend' : 'fairseq',
+                'algo':'wav2vec2',
                 'description':'Tamil bol model',
                 'provider':'ekstep',
                 'urls':{
@@ -70,6 +84,8 @@ MODEL_MAPPING={
               },
 
     'te-IN' : { 'lang_code':'te-IN',
+                'backend' : 'fairseq',
+                'algo':'wav2vec2',
                 'description':'Telugu bol model',
                 'provider':'ekstep',
                 'urls':{
