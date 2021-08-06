@@ -4,6 +4,9 @@ import subprocess
 import sox
 import os
 import torch
+from pydub import AudioSegment
+import sox
+import sys
 
 def apply_to_sample(f, sample):
     if hasattr(sample, "__len__") and len(sample) == 0:
@@ -35,7 +38,7 @@ def move_to_cuda(sample, device=None):
 
     return apply_to_sample(_move_to_cuda, sample)
 
-from pydub import AudioSegment
+
 
 def convert_audio_to_wav16(file_path):
     file_name = file_path.split('/')[-1][:-4]
@@ -83,3 +86,11 @@ def read_txt_file(txt_path):
      with open(txt_path, mode='r', encoding='utf-8') as file:
         text = file.read()
         return text
+
+
+def get_audio_duration(path):
+    return sox.file_info.duration(path)
+
+
+def install(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])

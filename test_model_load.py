@@ -7,8 +7,9 @@ if __name__ == "__main__":
 
 
 
-    model = load_model('en-IN',use_lm=True)
-    
+    model = load_model('hi-IN',use_lm=True)
+    text = model.predict('/home/harveen/bol/dev/long/virat.wav')   
+    print(text) 
     ## test single file
     # text = model.predict('../files/2_chunk-160.wav')
     # wer, cer = model.evaluate('../files/2_chunk-160.wav', '../files/2_chunk-160.txt')
@@ -20,11 +21,13 @@ if __name__ == "__main__":
 
 
     ## test batch
-    text = model.predict('../dev',  return_filenames=True)
-    local_text = []
-    for item in text:
-        for local_item in item:
-            local_text.append(local_item)
+    # text = model.predict('../dev',  return_filenames=True)
+
+
+    # local_text = []
+    # for item in text:
+    #     for local_item in item:
+    #         local_text.append(local_item)
 
     # print(local_text)
 
@@ -46,7 +49,7 @@ if __name__ == "__main__":
     #     print(time[i], time[i+1], pred[i-1])
 
     with open('file_test.txt', mode='w+', encoding='utf-8') as file:
-        file.writelines(str(local_text))
+        file.writelines("\n".join(text))
 
     # ground_truth_files = glob.glob('../dev/*.txt')[0:10]
     # ground_truth = []
