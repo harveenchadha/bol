@@ -8,7 +8,7 @@ import os
 
 from bol.data import Wav2VecDataLoader
 from bol.utils.helper_functions import validate_file 
-from bol.metrics import calculate_metrics_for_single_file, calculate_metrics_for_batch, wer, cer
+from bol.metrics import evaluate_metrics, wer, cer
 from torch.nn.parallel import DistributedDataParallel as DDP
 import torch.multiprocessing as mp
 import torch.distributed as dist
@@ -162,7 +162,7 @@ class Wav2vec2(Model):
 #            text = [(file_path, text)]
         
         elif type_file_path == 'dir':
-            dataloader_obj = Wav2VecDataLoader(train_batch_size = 4, num_workers= 4 ,file_data_path = file_path)
+            dataloader_obj = Wav2VecDataLoader(train_batch_size = 8, num_workers= 4 ,file_data_path = file_path)
             dataloader = dataloader_obj.get_file_data_loader()
 
             if viterbi:
@@ -175,7 +175,7 @@ class Wav2vec2(Model):
 
         if return_filenames:
             if type_file_path=='file':
-                return [(file_path, text)]
+                return [{'file':file_path, 'transcription': text}]
             elif type_file_path=='dir':
                 return text
         else:
@@ -185,7 +185,7 @@ class Wav2vec2(Model):
                 only_preds = []
                 for item in text:
                     # for file_name, local_text in item:
-                    only_preds.append(item[1])
+                    only_preds.append(item['transcription'])
                 text = only_preds
         return text
 
@@ -194,6 +194,7 @@ class Wav2vec2(Model):
         dict_metrics = {}
         if 'wer' in metrics:
             calculated_wer = wer(ground_truth, predictions)
+            print(calculated_wer)
             dict_metrics['wer'] = calculated_wer
 
         if 'cer' in metrics:
@@ -206,6 +207,7 @@ class Wav2vec2(Model):
 
     def predict_evaluate(self, file_path, txt_path=None, viterbi=False, metrics=['wer','cer']):
         predicted_text = self.predict(file_path, viterbi, return_filenames=True)
+        print(predicted_text)
 
         type_file_path = check_if_prediction_is_wav_or_directory(file_path)
 
@@ -214,9 +216,11 @@ class Wav2vec2(Model):
 
         if type_file_path == 'file':
             # open txt file
-            wer, cer = calculate_metrics_for_single_file(txt_path, predicted_text)
+            wer, cer =  evaluate_metrics(txt_path, predicted_text, mode='file')
         elif type_file_path == 'dir':
-            wer, cer = calculate_metrics_for_batch(txt_path, predicted_text)
+            wer, cer = evaluate_metrics(txt_path, predicted_text, mode='dir')
+        elif type_file_path == 'list':
+            wer, cer = evaluate_metrics(txt_path, predicted_text, mode='list')
             
 
         return wer, cer
@@ -226,6 +230,8 @@ def check_if_prediction_is_wav_or_directory(file_path):
         return 'file'
     elif os.path.isdir(file_path):
         return 'dir'
+    elif type(file_path) == list:
+        return 'list'
     else:
         raise Exception("Not a valid file or directory")
 

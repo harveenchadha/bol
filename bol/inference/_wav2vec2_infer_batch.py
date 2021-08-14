@@ -82,6 +82,6 @@ def get_results_for_batch(data_loader,dict_path,generator,model,use_cuda=False,w
     local_dict = []
     for pred, file in zip(predictions, filenames):
         for local_pred, local_file in zip(pred, file):
-            local_dict.append((local_file, local_pred))
+            local_dict.append({'file': local_file, 'transcription': local_pred})
 
     return local_dict

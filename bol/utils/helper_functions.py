@@ -94,3 +94,12 @@ def get_audio_duration(path):
 
 def install(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+
+
+
+
+def convert_using_sox(file, sample_rate=8000):
+    tfm = sox.Transformer()
+    tfm.set_output_format(rate=16000)
+    return tfm.build_array(input_array=file, sample_rate_in=sample_rate)

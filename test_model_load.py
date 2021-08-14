@@ -7,9 +7,44 @@ if __name__ == "__main__":
 
 
 
-    model = load_model('hi-IN',use_lm=True)
-    text = model.predict('/home/harveen/bol/dev/long/virat.wav')   
-    print(text) 
+    model = load_model('od-IN',use_lm=False)
+    text = model.predict('/home/harveen/bol/subtask1_blindtest/raw/Odia/audio/', return_filenames=True)
+    #text = model.predict('/home/harveen/bol/dev/eval', return_filenames=True)
+    # print(text) 
+
+    
+    with open('output_odia_without_lm.txt', mode='w+', encoding='utf-8') as file:
+        for item in text:
+            print(item['file'] + " " + item['transcription'], file=file)
+
+    gt_dict = {}
+    with open('/home/harveen/bol/subtask1_blindtest/raw/Odia/transcription.txt', mode='r', encoding='utf-8') as file:   
+        ground_truth = file.readlines()
+        for line in ground_truth:
+            file, trans = line.split(' ', 1)
+            gt_dict[file] =  trans.strip()
+
+    pr_dict = {}
+    with open('output_odia_without_lm.txt', mode='r',  encoding='utf-8') as file:
+        predictions = file.readlines()
+        for line in predictions:
+            arr = line.split(' ',1)           
+            local_file = arr[0]
+            local_file = local_file.split('/')[-1].split('.')[0]
+            pr_dict[local_file] = arr[1].strip()
+
+
+
+    gt = []
+    pr = []
+    for key, value in gt_dict.items():
+        gt.append(value)
+        pr.append(pr_dict[key])
+
+    metrics = model.evaluate(gt, pr)
+    print("WER: ", metrics['wer'])
+    print("CER: ", metrics['cer'])
+
     ## test single file
     # text = model.predict('../files/2_chunk-160.wav')
     # wer, cer = model.evaluate('../files/2_chunk-160.wav', '../files/2_chunk-160.txt')
@@ -48,8 +83,8 @@ if __name__ == "__main__":
     #         break
     #     print(time[i], time[i+1], pred[i-1])
 
-    with open('file_test.txt', mode='w+', encoding='utf-8') as file:
-        file.writelines("\n".join(text))
+    # with open('file_test.txt', mode='w+', encoding='utf-8') as file:
+    #     file.writelines("\n".join(text))
 
     # ground_truth_files = glob.glob('../dev/*.txt')[0:10]
     # ground_truth = []

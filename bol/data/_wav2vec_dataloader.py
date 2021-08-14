@@ -3,6 +3,11 @@ from torch.utils.data import DataLoader, Dataset
 import torch.nn.functional as F
 import glob
 import soundfile as sf
+#from bol.utils import convert_using_sox
+#import torchaudio
+#import numpy as np
+import sox
+#import librosa
 
 def postprocess_features(feats):
     if feats.dim() == 2: feats = feats.mean(-1)
@@ -17,10 +22,36 @@ def get_feature(batch_sample):
 def get_padding_mask(batch_sample):
     return torch.BoolTensor(batch_sample[0].size(1)).fill_(False)
 
+def audio_preprocessing(batch):
+    # convert individual audio into wav_16 -> batch
+    # covert to torch -> indiviudal
+    pass
 
+#resampler = torchaudio.transforms.Resample(8_000, 16_000)
+
+tfm = sox.Transformer()
+tfm.set_output_format(rate=16000)
+
+def convert_using_sox(file, sample_rate=8000):        
+    return tfm.build_array(input_array=file, sample_rate_in=sample_rate)
 
 def get_batch_encoder_input(batch_samples):
-    features = [get_feature(batch_sample[0]) for batch_sample in batch_samples]
+    # print(batch_samples)
+    # print(batch_samples[0])
+    # print("#"*28)
+    # print(batch_samples[1])
+    # print("#"*58)
+    # print(batch_samples[0][0][0])
+    # print(batch_samples[0][0][1])
+    # print(batch_samples[0][1])
+
+
+    #features, sample_rates, filenames = zip(*[(get_feature(batch_sample[0][0]), batch_sample[0][1], batch_sample[1]) for batch_sample in batch_samples])
+    # print(features)
+    # print(sample_rates)
+    # print(filenames)
+
+    features = [get_feature(batch_sample[0]) for batch_sample in batch_samples] 
     filenames = [filename[1] for filename in batch_samples]
     features = torch.nn.utils.rnn.pad_sequence(features, batch_first=True, padding_value=0)
     return features, filenames
@@ -39,9 +70,29 @@ class Wav2VecDataset(Dataset):
 
     def _get_feature(self, filepath):
         wav, sample_rate = sf.read(filepath)
+        if sample_rate != 16000:
+            wav = convert_using_sox(wav, sample_rate)
         wav = torch.from_numpy(wav).float()
+        
         #wav = wav.to('cuda')
-        return wav    
+        
+        # wav2, sample_rate2 = torchaudio.load(filepath)
+        # speech = resampler(wav2).squeeze().numpy()
+
+        # print("SF", wav)
+        # print("TA", speech)
+
+        # print(torch.all(wav.eq(speech)))
+
+        # y, s = librosa.load(filepath, sr=16000)
+        # # print(wav)
+        # wav2 = torch.from_numpy(y).float()
+        #print(wav2)
+
+        # print(torch.all(wav.eq(wav2)))
+
+        return wav #, sample_rate    
+
 
 class Wav2VecDataLoader:
     def __init__( self, train_batch_size, num_workers, file_data_path ):

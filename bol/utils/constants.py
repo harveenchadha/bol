@@ -94,6 +94,28 @@ MODEL_MAPPING={
                 }
               },
 
+    'mr-IN' : { 'lang_code':'mr-IN',
+                'backend' : 'fairseq',
+                'algo':'wav2vec2',
+                'description':'Marathi bol model',
+                'provider':'ekstep',
+                'urls':{
+                    'model_url':['https://storage.googleapis.com/vakyaansh-open-models/compressed_v2/marathi/v3-05-08-2021_custom_model_for_single_file_inference.zip'],
+                    'lm_url':['https://storage.googleapis.com/vakyaansh-open-models/compressed_v2/marathi/LM.zip']
+                }
+              },
+
+    'od-IN' : { 'lang_code':'od-IN',
+                'backend' : 'fairseq',
+                'algo':'wav2vec2',
+                'description':'Odiya bol model',
+                'provider':'ekstep',
+                'urls':{
+                    'model_url':['https://storage.googleapis.com/vakyaansh-open-models/compressed_v2/odia/v2-26-07-2021_custom_model_for_single_file_inference.zip'],
+                    'lm_url':['https://storage.googleapis.com/vakyaansh-open-models/compressed_v2/odia/LM.zip']
+                }
+              },
+
 
     # 'hi-IN-old' : { 'lang_code':'hi-IN-old',
     #             'description':'Hindi bol model',

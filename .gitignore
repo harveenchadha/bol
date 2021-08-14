@@ -129,3 +129,4 @@ experimental/*
 wandb/
 
 file_*
+output_*
