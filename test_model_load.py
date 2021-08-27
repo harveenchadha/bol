@@ -7,12 +7,21 @@ if __name__ == "__main__":
 
 
 
-    model = load_model('od-IN',use_lm=False)
-    text = model.predict('/home/harveen/bol/subtask1_blindtest/raw/Odia/audio/', return_filenames=True)
+    model = load_model('hi-IN',use_lm=True)
+    #text = model.predict('/home/harveen/bol/urdu/wav', return_filenames=True)
     #text = model.predict('/home/harveen/bol/dev/eval', return_filenames=True)
     # print(text) 
 
-    
+    model.evaluate('../urdu/text', '../urdu/predicted_urdu')
+    #print(metrics)
+
+"""    for item in text:
+        filename = item['file'].split('/')[-1].split('.')[0]
+        with open('/home/harveen/bol/urdu/predicted/'+filename+'.txt', mode='w+', encoding='utf-8') as file:
+            file.write(item['transcription'])
+"""
+
+"""   
     with open('output_odia_without_lm.txt', mode='w+', encoding='utf-8') as file:
         for item in text:
             print(item['file'] + " " + item['transcription'], file=file)
@@ -44,6 +53,9 @@ if __name__ == "__main__":
     metrics = model.evaluate(gt, pr)
     print("WER: ", metrics['wer'])
     print("CER: ", metrics['cer'])
+
+
+"""
 
     ## test single file
     # text = model.predict('../files/2_chunk-160.wav')

@@ -7,7 +7,8 @@ from tqdm import tqdm
 
 
 def calculate_metrics_for_single_file(txt_path, prediction):
-    ground_truth = read_txt_file(txt_path)
+    #ground_truth = read_txt_file(txt_path)
+    ground_truth = txt_path
     wer = calculate_wer(ground_truth, prediction)
     cer = calculate_cer(ground_truth, prediction)
 

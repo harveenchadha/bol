@@ -1,6 +1,21 @@
 
 
 MODEL_MAPPING={
+
+    'hi-IN' : { 'lang_code': 'hi-IN',
+                'backend' : 'torchscript',
+                'algo' : 'wav2ve2',
+                'description': 'Hindi Quantized Model',
+                'provider' : 'ekstep',
+                'urls' : {
+                    'model_url' : [],
+                    'lm_url' : []
+                },
+                'contributed_by' : '',
+                'citation' : '',
+                'framework': 'ts' 
+              },
+
     'hi-IN' : { 'lang_code':'hi-IN',
                 'backend' : 'fairseq',
                 'algo':'wav2vec2',

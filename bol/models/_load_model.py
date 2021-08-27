@@ -1,5 +1,3 @@
-
-
 import torch
 import torch.nn as nn
 from bol.inference import load_decoder, get_results_for_single_file, get_results_for_batch
@@ -13,22 +11,16 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 import torch.multiprocessing as mp
 import torch.distributed as dist
 
-class Model:
-    def __init__(self):
-        pass
+from ._model import Model
 
-    def fit(self):
-        pass
 
-    def predict(self):
-        print("I am here")
-        pass
 
 class Wav2vec2(Model):
     
     def __init__(self, model_path, dict_path, lm_path, lexicon_path, use_cuda_if_available=True):
-        #super().__init__()
-        self.model_path = model_path
+        super().__init__(model_path, use_cuda_if_available)
+        
+        #self.model_path = model_path
         self.dict_path = dict_path 
         self.lm_path = lm_path
         self.lexicon_path = lexicon_path
@@ -80,7 +72,7 @@ class Wav2vec2(Model):
 
 
 
-    def load_model(self, load_language_model=True, force_download=False,  language_model_params={}, donwload_without_lm=False):
+    def load_model(self):
         """ Loads ASR model and language model according to the params specified.
 
         Args:
@@ -152,16 +144,30 @@ class Wav2vec2(Model):
     def predict(self, file_path, viterbi=False, return_filenames = False):
         type_file_path = check_if_prediction_is_wav_or_directory(file_path)
         text = ''
-        if type_file_path == 'file':
-            file_path = validate_file(file_path)
+
+        if len(file_path) == 1:
             if viterbi:
                 text = get_results_for_single_file(file_path, self.dict_path, self.get_alternative_decoder(), self.get_model(), self.use_cuda_if_available)
             else: 
                 text = get_results_for_single_file(file_path, self.dict_path, self.get_decoder(), self.get_model(), self.use_cuda_if_available)
 
-#            text = [(file_path, text)]
-        
-        elif type_file_path == 'dir':
+            if return_filenames:
+                return [{'file':file_path, 'transcription': text}] 
+            else:
+                return text
+
+        else:
+
+
+        # if type_file_path == 'file':
+        #     file_path = validate_file(file_path[0])
+        #     if viterbi:
+        #         text = get_results_for_single_file(file_path[0], self.dict_path, self.get_alternative_decoder(), self.get_model(), self.use_cuda_if_available)
+        #     else: 
+        #         text = get_results_for_single_file(file_path[0], self.dict_path, self.get_decoder(), self.get_model(), self.use_cuda_if_available)
+
+
+        # else:
             dataloader_obj = Wav2VecDataLoader(train_batch_size = 8, num_workers= 4 ,file_data_path = file_path)
             dataloader = dataloader_obj.get_file_data_loader()
 
@@ -170,38 +176,73 @@ class Wav2vec2(Model):
             else:
 
                 text = get_results_for_batch(dataloader, self.dict_path, self.get_decoder(), self.get_model(), self.use_cuda_if_available)
-                #self.cleanup()
-        #print(text)
 
-        if return_filenames:
-            if type_file_path=='file':
-                return [{'file':file_path, 'transcription': text}]
-            elif type_file_path=='dir':
+            if return_filenames:
                 return text
-        else:
-            if type_file_path=='file':
-                return text
-            elif type_file_path=='dir':
-                only_preds = []
-                for item in text:
-                    # for file_name, local_text in item:
-                    only_preds.append(item['transcription'])
-                text = only_preds
-        return text
+            else:
+                only_preds = [item['transcription'] for item in text]
+                return only_preds
+        
+        # elif type_file_path == 'dir':
+        #     dataloader_obj = Wav2VecDataLoader(train_batch_size = 8, num_workers= 4 ,file_data_path = file_path)
+        #     dataloader = dataloader_obj.get_file_data_loader()
+
+        #     if viterbi:
+        #         text = get_results_for_batch(dataloader, self.dict_path, self.get_alternative_decoder(), self.get_model(),  self.use_cuda_if_available)
+        #     else:
+
+        #         text = get_results_for_batch(dataloader, self.dict_path, self.get_decoder(), self.get_model(), self.use_cuda_if_available)
+
+        # if return_filenames:
+        #     if type_file_path=='file':
+        #         return [{'file':file_path, 'transcription': text}]
+        #     elif type_file_path=='dir':
+        #         return text
+        # else:
+        #     if type_file_path=='file':
+        #         return text
+        #     elif type_file_path=='dir':
+        #         only_preds = []
+        #         for item in text:
+        #             # for file_name, local_text in item:
+        #             only_preds.append(item['transcription'])
+        #         text = only_preds
+        # return text
 
     def evaluate(self, ground_truth, predictions,metrics=['wer','cer']):
         metrics = [metric.lower() for metric in metrics]
         dict_metrics = {}
-        if 'wer' in metrics:
-            calculated_wer = wer(ground_truth, predictions)
-            print(calculated_wer)
-            dict_metrics['wer'] = calculated_wer
+        import glob
+        ground_truth_ = glob.glob(ground_truth+'/*.txt')
 
-        if 'cer' in metrics:
-            calculated_cer = cer(ground_truth, predictions)
-            dict_metrics['cer'] = calculated_cer
+        gt_content_list = [] 
+        pr_content_list = []        
+        for gt in ground_truth_:
+            filename = gt.split('/')[-1]
+            with open(gt) as gt_file:
+                gt_content = gt_file.read().strip()
+                gt_content_list.append(gt_content)
+
+            with open(predictions+'/'+filename) as pr_file:
+                pr_content = pr_file.read().strip()
+                pr_content_list.append(pr_content)
+
+            # if 'wer' in metrics:
+            #     calculated_wer = wer(ground_truth, predictions)
+            #     #print(calculated_wer)
+            #     dict_metrics['wer'] = calculated_wer
+
+            # if 'cer' in metrics:
+            #     calculated_cer = cer(ground_truth, predictions)
+            #     dict_metrics['cer'] = calculated_cer
         
-        return dict_metrics
+        # return dict_metrics
+
+        wer, cer = evaluate_metrics(gt_content_list, pr_content_list, mode='list')
+        print("WER: ", wer)
+        print("CER: ", cer)
+
+
         #print(calculated_wer)
         #wer, cer = calculate_metrics_for_batch()
 
@@ -239,7 +280,18 @@ def check_if_prediction_is_wav_or_directory(file_path):
 
 
 from bol.utils.model_zoo import verify_model_mapping, verify_lm_mapping
-    
+
+from .wav2vec2._wav2vec2_ts import Wav2Vec2TS
+
+
+
+def load_model_ts(model_path,
+                use_cuda_if_available=True,
+                ):
+    model = Wav2Vec2TS(model_path, use_cuda_if_available)
+    return model
+
+
 
 def load_model( model_code= None,
                 model_path= None,
