@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import glob
 
 class Model:
     def __init__(self, model_path, use_cuda_if_available):
@@ -13,11 +14,54 @@ class Model:
     def preprocess(self):
         pass
 
-    def predict(self, file_path):
+    def predict(self, file_path, return_filenames = True):
+        #get dataloader
         pass
 
-    def evaluate(self):
-        pass
+    def predict_from_dir(self, dir_path, ext,  return_filenames = True):
+        file_path = glob.glob(dir_path+'/*.' + ext, recursive=True)
+        return self.predict(file_path)
+
+
+
+
+#    def evaluate(self, ground_truth, predictions, metrics=['wer','cer']):
+    # def evaluate(self, audio_file_paths, text_file_paths, return_preds = False, metrics = ['wer', 'cer']):
+    #     predictions = self.predict(audio_file_paths, return_filenames = True)
+
+    #     metrics = [metric.lower() for metric in metrics]
+
+    #     dict_metrics = {}
+    #     import glob
+    #     ground_truth_ = glob.glob(ground_truth+'/*.txt')
+
+    #     gt_content_list = [] 
+    #     pr_content_list = []        
+    #     for gt in ground_truth_:
+    #         filename = gt.split('/')[-1]
+    #         with open(gt) as gt_file:
+    #             gt_content = gt_file.read().strip()
+    #             gt_content_list.append(gt_content)
+
+    #         with open(predictions+'/'+filename) as pr_file:
+    #             pr_content = pr_file.read().strip()
+    #             pr_content_list.append(pr_content)
+
+    #         # if 'wer' in metrics:
+    #         #     calculated_wer = wer(ground_truth, predictions)
+    #         #     #print(calculated_wer)
+    #         #     dict_metrics['wer'] = calculated_wer
+
+    #         # if 'cer' in metrics:
+    #         #     calculated_cer = cer(ground_truth, predictions)
+    #         #     dict_metrics['cer'] = calculated_cer
+        
+    #     # return dict_metrics
+
+    #     wer, cer = evaluate_metrics(gt_content_list, pr_content_list, mode='list')
+    #     print("WER: ", wer)
+    #     print("CER: ", cer)
+
 
     def move_to(self, device):
         pass

@@ -285,6 +285,21 @@ from .wav2vec2._wav2vec2_ts import Wav2Vec2TS
 
 
 
+def load_model( lang = 'hi-IN',
+                backend = 'torchscript',
+                algo = 'wav2vec2',
+                unique_code = 'hi_quant'
+              ):
+    if unique_code:
+        #get_model_from_unique_code()
+        pass
+    elif lang and backend and algo:
+        #unique_code = get_unique_code_from_params(lang, backend, algo)
+        pass
+
+    
+
+
 def load_model_ts(model_path,
                 use_cuda_if_available=True,
                 ):
