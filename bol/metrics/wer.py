@@ -32,6 +32,26 @@ def calculate_wer(source, target):
     return wer_local
 
 
+def wer_for_evaluate(ground_truth, predictions):
+    num_tokens = []
+    fwer = []
+
+    dict_gt = {}
+
+    for item in ground_truth:
+        gt_file_name = item['text_file_name'].split('/')[-1].split('.')[0]
+        dict_gt[gt_file_name] = item
+
+    for pred in predictions:
+        pred_file_name = pred['file'].split('/')[-1].split('.')[0]
+        gt = dict_gt[pred_file_name]
+
+        fwer.append( wer_single(gt['text_file_content'],pred['transcription']) )
+        num_tokens.append( len(gt['text_file_content'].split()) )
+
+    wer = sum(fwer) / sum(num_tokens) * 100
+    return wer
+
 def wer(ground_truth, predictions):
     num_tokens = []
     fwer = []
