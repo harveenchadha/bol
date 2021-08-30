@@ -4,6 +4,9 @@ import torch.nn as nn
 import glob
 from bol.utils import load_text_files_in_parallel, load_text_files_in_parallel_from_dir
 from bol.metrics import wer_for_evaluate
+from bol.utils import get_audio_duration
+from bol.inference import call_vad
+from collections import OrderedDict
 
 class Model:
     def __init__(self, model_path, use_cuda_if_available):
@@ -24,6 +27,27 @@ class Model:
     def predict_from_dir(self, dir_path, ext,  return_filenames = True):
         file_path = glob.glob(dir_path+'/*.' + ext, recursive=True)
         return self.predict(file_path)
+
+
+    def preprocess_vad(self, wav_path):
+        duration = get_audio_duration(wav_path)
+        file_paths = []
+        if duration > 15:
+            file_paths = call_vad(wav_path)
+        else:
+            file_paths.append(wav_path)
+
+        return file_paths
+
+    def postprocess_vad(self, filenames_from_vad, preds_from_vad):
+        predictions = dict(zip(filenames_from_vad, preds_from_vad))
+        pred_dict = OrderedDict({})
+        for key, value in predictions.items():
+            pred_dict[key.split('/')[-1].split('.')[0]] = value
+
+        predictions = OrderedDict(sorted(pred_dict.items()))
+        predictions = pred_dict.values()
+        return " ".join(predictions)
 
 
 

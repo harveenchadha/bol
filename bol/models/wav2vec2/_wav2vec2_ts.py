@@ -10,6 +10,7 @@ import gc
 
 
 
+
 class Wav2Vec2TS(Model):
     def __init__(self, model_path, use_cuda_if_available):
         super().__init__(model_path, 'False')
@@ -33,12 +34,19 @@ class Wav2Vec2TS(Model):
 
     #     return dict(zip(preds, filenames))
 
-
-
-    def predict(self, file_path,  return_filenames = True):
+    def load_files_using_torchaudio(self, file_path):
         preds = []
         filenames = []
+        for file in tqdm(file_path):
+            wav, _ = torchaudio.load(file)
+            pred = self._model(wav)
+            preds.append(pred)
+            filenames.append(file)
+        return preds, filenames
 
+
+    def predict(self, file_path,  return_filenames = True, apply_vad = True):
+        
         # ## works in dataloader but output is not correct ##
         # dataloader_obj = Wav2Vec2TsDataLoader(batch_size = 8, num_workers= 4 ,file_data_path = file_path)
         # dataloader = dataloader_obj.get_file_data_loader()
@@ -54,14 +62,19 @@ class Wav2Vec2TS(Model):
         #     filenames.extend(filename)
         # ## end dataloader ##
         
+        preds = []
+        filenames = []
 
-        
-        for file in tqdm(file_path):
-            wav, _ = torchaudio.load(file)
-            pred = self._model(wav)
-            preds.append(pred)
-            filenames.append(file)
-        
+        if apply_vad:
+            for file in file_path:
+                files_split_from_vad = self.preprocess_vad(file)
+                preds_local, filenames_local = self.load_files_using_torchaudio(files_split_from_vad)
+                predictions = self.postprocess_vad(filenames_local, preds_local)
+                preds.append(predictions)
+                filenames.append(file)
+                
+        else:
+            preds, filenames = self.load_files_using_torchaudio(file_path)
         
 
         # def load_file(local_file):
