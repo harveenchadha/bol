@@ -1,10 +1,8 @@
-from ._load_model import load_model, load_model_ts
-from .wav2vec2._wav2vec2 import Wav2VecCtc
-from .wav2vec2._wav2vec2_ts import Wav2Vec2TS
-
+from ._load_model import load_model
+from .wav2vec2._wav2vec2_fairseq import Wav2vec2Fairseq, Wav2VecCtc
 __all__=[
-    "load_model",
-    "Wav2VecCtc",
-    "load_model_ts",
-    "Wav2Vec2TS"
+    "Wav2vec2Fairseq",
+    "Wav2VecCtc"
+    "Wav2Vec2TS",
+    "load_model"
 ]

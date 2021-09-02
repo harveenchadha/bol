@@ -8,7 +8,7 @@ from bol.utils import get_audio_duration
 from bol.inference import call_vad
 from collections import OrderedDict
 
-class Model:
+class BolModel:
     def __init__(self, model_path, use_cuda_if_available):
         self.model_path = model_path
         self.use_cuda_if_available = use_cuda_if_available
@@ -92,7 +92,7 @@ class Model:
     def load_jit_model(self):
         self._model = torch.jit.load(self.model_path)
     
-    def load_model(self):        
+    def load_model_torch( self):
         if torch.cuda.is_available() and self.use_cuda_if_available:
             self.use_cuda_if_available = True
             self._model = torch.load(self.model_path, map_location=torch.device('cuda'))
@@ -104,3 +104,10 @@ class Model:
 
         if torch.cuda.device_count() > 1:
             self._model = nn.DataParallel(self._model)
+
+    def get_decoder(self):
+        return self._decoder
+
+    def get_alternative_decoder(self):
+        return self._alternative_decoder
+

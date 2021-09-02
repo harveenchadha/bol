@@ -1,15 +1,13 @@
 
 
 MODEL_MAPPING={
-
-    'hi-IN' : { 'lang_code' : 'hi-IN',
-                'unique_code' : 'hi_quant',
+    'hi-quant' : { 'lang_code' : 'hi-IN',
                 'backend' : 'torchscript',
                 'algo' : 'wav2vec2',
                 'description': 'Hindi Quantized Model',
                 'provider' : 'ekstep',
                 'urls' : {
-                    'model_url' : [],
+                    'model_url' : ['https://storage.googleapis.com/vakyaansh-open-models/quant_mobile/hindi/wav2vec2.pt'],
                     'lm_url' : []
                 },
                 'contributed_by' : '',
@@ -143,3 +141,9 @@ MODEL_MAPPING={
 }
 
 MODEL_PATH='/.bol/models'
+
+MODEL_FILES_REQ = {
+    'wav2vec2_torchscript' : ['*.pt'],
+    'wav2vec2_fairseq' : ['*.pt', '*.ltr.txt'],
+    'wav2vec2_fairseq_lm' : ['*.binary', '*.lst']
+}

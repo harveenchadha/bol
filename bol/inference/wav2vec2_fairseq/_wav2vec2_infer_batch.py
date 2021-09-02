@@ -79,9 +79,14 @@ def get_results_for_batch(data_loader,dict_path,generator,model,use_cuda=False,w
         prediction, filename = process_batch(batch, model=model, generator=generator, target_dict=target_dict, use_cuda=use_cuda, half=half)
         predictions.append(prediction)
         filenames.append(filename)
-    local_dict = []
+
+    preds = []
+    files = []
+    # local_dict = []
     for pred, file in zip(predictions, filenames):
         for local_pred, local_file in zip(pred, file):
-            local_dict.append({'file': local_file, 'transcription': local_pred})
+            preds.append(local_pred)
+            files.append(local_file)
+    #         local_dict.append({'file': local_file, 'transcription': local_pred})
 
-    return local_dict
+    return files, preds

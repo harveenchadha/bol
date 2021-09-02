@@ -1,5 +1,5 @@
 
-from .._model import Model
+from .._model import BolModel
 from bol.data import Wav2Vec2TsDataLoader
 from tqdm import tqdm
 from joblib import Parallel, delayed
@@ -11,7 +11,7 @@ import gc
 
 
 
-class Wav2Vec2TS(Model):
+class Wav2Vec2TS(BolModel):
     def __init__(self, model_path, use_cuda_if_available):
         super().__init__(model_path, 'False')
         self.load_jit_model()
@@ -118,40 +118,5 @@ class Wav2Vec2TS(Model):
     #     Parallel(n_jobs=2)(delayed(self.predict)(file_p) for file_p in split_file_paths)
             
 
-       
-    # def evaluate(self, file_path, gt_path):
-    #     predictions = self.predict(file_path)
-
-    #     metrics = [metric.lower() for metric in metrics]
-    #     dict_metrics = {}
-    #     import glob
-    #     ground_truth_ = glob.glob(ground_truth+'/*.txt')
-
-    #     gt_content_list = [] 
-    #     pr_content_list = []        
-    #     for gt in ground_truth_:
-    #         filename = gt.split('/')[-1]
-    #         with open(gt) as gt_file:
-    #             gt_content = gt_file.read().strip()
-    #             gt_content_list.append(gt_content)
-
-    #         with open(predictions+'/'+filename) as pr_file:
-    #             pr_content = pr_file.read().strip()
-    #             pr_content_list.append(pr_content)
-
-    #         # if 'wer' in metrics:
-    #         #     calculated_wer = wer(ground_truth, predictions)
-    #         #     #print(calculated_wer)
-    #         #     dict_metrics['wer'] = calculated_wer
-
-    #         # if 'cer' in metrics:
-    #         #     calculated_cer = cer(ground_truth, predictions)
-    #         #     dict_metrics['cer'] = calculated_cer
-        
-    #     # return dict_metrics
-
-    #     wer, cer = evaluate_metrics(gt_content_list, pr_content_list, mode='list')
-    #     print("WER: ", wer)
-    #     print("CER: ", cer)
-
+    
 
