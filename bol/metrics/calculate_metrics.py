@@ -1,10 +1,6 @@
 from .cer import calculate_cer
 from .wer import calculate_wer
-from bol.utils.helper_functions import read_txt_file
 from tqdm import tqdm
-
-
-
 
 def calculate_metrics_for_single_file(txt_path, prediction):
     #ground_truth = read_txt_file(txt_path)
@@ -13,8 +9,6 @@ def calculate_metrics_for_single_file(txt_path, prediction):
     cer = calculate_cer(ground_truth, prediction)
 
     return wer, cer, ground_truth
-
-
 
 def calculate_metrics_for_batch(txt_dir, preds):
     num_tokens = []
@@ -39,8 +33,6 @@ def calculate_metrics_for_batch(txt_dir, preds):
     cer = sum(fcer) / sum(num_chars) * 100
     return wer, cer
 
-
-
 def calculate_metrics_for_list(ground_truth, preds):
     num_tokens = []
     num_chars = []
@@ -58,7 +50,6 @@ def calculate_metrics_for_list(ground_truth, preds):
     wer = sum(fwer) / sum(num_tokens) * 100
     cer = sum(fcer) / sum(num_chars) * 100
     return wer, cer
-
 
 def evaluate_metrics(ground_truth, preds, mode):
     if mode == 'file':

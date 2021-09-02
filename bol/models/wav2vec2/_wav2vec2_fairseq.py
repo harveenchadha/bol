@@ -1,12 +1,8 @@
 from fairseq.models import BaseFairseqModel
-from fairseq.data import Dictionary
 from fairseq.models.wav2vec.wav2vec2_asr import Wav2VecEncoder, Wav2Vec2CtcConfig
-from fairseq.dataclass.utils import convert_namespace_to_omegaconf
 from fairseq import utils
-import torch
 from bol.inference import load_decoder
 import time
-
 from .._model import BolModel
 from bol.inference import get_results_for_batch, get_results_for_single_file
 from bol.data import Wav2Vec2FDataLoader
@@ -92,6 +88,7 @@ class Wav2vec2Fairseq(BolModel):
 
 
     def predict_in_batch(self, file_paths, can_use_lm):
+        # Hardcoding #
         dataloader_obj = Wav2Vec2FDataLoader(train_batch_size = 4, num_workers= 4 ,file_data_path = file_paths)
         dataloader = dataloader_obj.get_file_data_loader()
 

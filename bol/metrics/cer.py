@@ -10,7 +10,6 @@ def cer_single(s1, s2):
     s1, s2, = s1.replace(' ', ''), s2.replace(' ', '')
     return Lev.distance(s1, s2)
 
-
 def calculate_cer(source, target):
     try:
         cer_local = cer_single(source, target)
@@ -18,7 +17,6 @@ def calculate_cer(source, target):
         return len(source.replace(' ',''))
         
     return cer_local
-
 
 def cer_for_evaluate(ground_truth, predictions):
     num_tokens = []
@@ -39,7 +37,6 @@ def cer_for_evaluate(ground_truth, predictions):
 
     cer = sum(fcer) / sum(num_tokens) * 100
     return cer
-
 
 def cer(ground_truth, predictions):
     num_chars = []

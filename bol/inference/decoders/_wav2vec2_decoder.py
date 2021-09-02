@@ -1,14 +1,7 @@
 import torch
 import numpy as np
-import argparse
-import soundfile as sf
-import torch.nn.functional as F
 import itertools as it
-from fairseq import utils
-from fairseq.models import BaseFairseqModel
 from fairseq.data import Dictionary
-from fairseq.models.wav2vec.wav2vec2_asr import Wav2VecEncoder, Wav2Vec2CtcConfig
-from fairseq.dataclass.utils import convert_namespace_to_omegaconf
 from typing import List
 
 try:
@@ -243,7 +236,6 @@ class W2lKenLMDecoder(W2lDecoder):
             )
         return hypos
     
-
 def get_args(lexicon_path, lm_path, BEAM=128, LM_WEIGHT=2, WORD_SCORE=-1):
     args = {}
     args['lexicon'] = lexicon_path
@@ -260,7 +252,7 @@ def get_args(lexicon_path, lm_path, BEAM=128, LM_WEIGHT=2, WORD_SCORE=-1):
     return args
 
 
-
+# HARDCODING ARGS HERE #
 def load_decoder(dict_path, lexicon_path, lm_path, decoder):
     target_dict = Dictionary.load(dict_path)
     args = get_args(lexicon_path, lm_path)

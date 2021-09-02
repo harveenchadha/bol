@@ -61,7 +61,7 @@ class Wav2VecDataset(Dataset):
     def __init__(self, audio_path):
         #self.audio_paths = glob.glob(audio_path + '/**/*.wav', recursive=True) #[0:20]
         self.audio_paths = audio_path
-        
+
     def __len__(self):
         return len(self.audio_paths)
 
@@ -71,8 +71,8 @@ class Wav2VecDataset(Dataset):
 
     def _get_feature(self, filepath):
         wav, sample_rate = sf.read(filepath)
-        if sample_rate != 16000:
-            wav = convert_using_sox(wav, sample_rate)
+        # if sample_rate != 16000:
+        #     wav = convert_using_sox(wav, sample_rate)
         wav = torch.from_numpy(wav).float()
         
         #wav = wav.to('cuda')

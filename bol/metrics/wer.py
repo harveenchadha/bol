@@ -21,7 +21,6 @@ def wer_single( s1, s2):
 
         return Lev.distance(''.join(w1), ''.join(w2))
 
-
 def calculate_wer(source, target):
     wer_local = ''
     try:
@@ -30,7 +29,6 @@ def calculate_wer(source, target):
         print(source)
         return len(source.split(' '))
     return wer_local
-
 
 def wer_for_evaluate(ground_truth, predictions):
     num_tokens = []
