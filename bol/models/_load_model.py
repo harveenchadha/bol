@@ -45,11 +45,15 @@ def load_model( unique_code = None,
                 elif item.endswith('ltr.txt'):
                     dict_path = item
 
-            for item in lm_paths:
-                if item.endswith('binary'):
-                    lm_path = item
-                elif item.endswith('lst'):
-                    lexicon_path = item
+            lm_path = None
+            lexicon_path = None
+            if use_lm and len(model_obj['urls']['lm_url']) > 0:
+                for item in lm_paths:
+                    if item.endswith('binary'):
+                        lm_path = item
+                    elif item.endswith('lst'):
+                        lexicon_path = item
                 
+
             model = Wav2vec2Fairseq(model_path, dict_path, lm_path, lexicon_path, use_cuda_if_available)
             return model

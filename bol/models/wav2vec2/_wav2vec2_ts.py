@@ -45,8 +45,7 @@ class Wav2Vec2TS(BolModel):
         return preds, filenames
 
 
-    def predict(self, file_path,  return_filenames = True, apply_vad = True):
-        
+    def predict(self, file_path, with_lm = False, return_filenames = True, apply_vad = True):
         # ## works in dataloader but output is not correct ##
         # dataloader_obj = Wav2Vec2TsDataLoader(batch_size = 8, num_workers= 4 ,file_data_path = file_path)
         # dataloader = dataloader_obj.get_file_data_loader()

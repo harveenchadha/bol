@@ -17,7 +17,6 @@ class Wav2VecCtc(BaseFairseqModel):
         super().upgrade_state_dict_named(state_dict, name)
         return state_dict
 
-    @classmethod
     def build_model(cls, cfg: Wav2Vec2CtcConfig, target_dictionary): ##change here
         """Build a new model instance."""
         w2v_encoder = Wav2VecEncoder(cfg, target_dictionary)
@@ -64,6 +63,7 @@ class Wav2vec2Fairseq(BolModel):
             self.load_decoder()
         else:
             self._decoder = load_decoder(self.dict_path, '', '', 'viterbi')
+            self._alternative_decoder = self._decoder
 
     def load_decoder(self):
         start = time.time()
@@ -89,7 +89,7 @@ class Wav2vec2Fairseq(BolModel):
 
     def predict_in_batch(self, file_paths, can_use_lm):
         # Hardcoding #
-        dataloader_obj = Wav2Vec2FDataLoader(train_batch_size = 4, num_workers= 4 ,file_data_path = file_paths)
+        dataloader_obj = Wav2Vec2FDataLoader(train_batch_size = 1, num_workers= 4 ,file_data_path = file_paths)
         dataloader = dataloader_obj.get_file_data_loader()
 
         if not can_use_lm:

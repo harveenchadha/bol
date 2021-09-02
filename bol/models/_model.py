@@ -20,13 +20,13 @@ class BolModel:
     def preprocess(self):
         pass
 
-    def predict(self, file_path, return_filenames = True):
+    def predict(self, file_path, with_lm = False, return_filenames = True):
         #get dataloader
         pass
 
-    def predict_from_dir(self, dir_path, ext,  return_filenames = True):
+    def predict_from_dir(self, dir_path, ext, return_filenames = True, with_lm=False):
         file_path = glob.glob(dir_path+'/*.' + ext, recursive=True)
-        return self.predict(file_path)
+        return self.predict(file_path, return_filenames = return_filenames, with_lm = with_lm)
 
 
     def preprocess_vad(self, wav_path):

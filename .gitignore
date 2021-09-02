@@ -130,3 +130,5 @@ wandb/
 
 file_*
 output_*
+demos/test_audios/
+demos/test_audios/*

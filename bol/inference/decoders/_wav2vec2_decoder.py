@@ -67,6 +67,10 @@ class W2lDecoder(object):
             k: v for k, v in sample["net_input"].items() if k != "prev_output_tokens"
         }
         emissions = self.get_emissions(models, encoder_input)
+        #return emissions
+        return self.decode(emissions)
+
+    def run_decoder(self, emissions):
         return self.decode(emissions)
 
     def get_emissions(self, models, encoder_input):

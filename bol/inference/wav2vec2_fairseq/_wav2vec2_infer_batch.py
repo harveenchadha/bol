@@ -47,6 +47,9 @@ def process_batch_element(element, model, generator, target_dict, use_cuda=False
     sample = move_to_cuda(sample) if use_cuda else sample
     with torch.no_grad():
         hypo = generator.generate(model, sample, prefix_tokens=None)
+        # emm = generator.generate(model, sample, prefix_tokens=None)
+        # hypo = generator.run_decoder(emm)
+
 
     hyp_pieces = [target_dict.string(item[0]["tokens"].int().cpu()) for item in hypo]
     prediction = [post_process_sentence(item, 'letter') for item in hyp_pieces]
