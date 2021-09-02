@@ -6,11 +6,12 @@ Open Source Speech To Text Engines
 Usage:
 
 ```
-from bol.models import load_model, Wav2VecCtc
+from bol.models import load_model
 
-model = load_model('hi-IN',use_lm=True)
+model = load_model('hi-quant')
 
-text = model.predict('/home/harveen/bol/dev/long/virat.wav')   
+text = model.predict(['/home/harveen/bol/dev/long/virat.wav'])   
+
 ```
 
 Output:
