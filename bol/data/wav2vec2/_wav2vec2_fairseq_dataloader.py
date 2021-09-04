@@ -7,6 +7,7 @@ import soundfile as sf
 #import torchaudio
 #import numpy as np
 import sox
+import time
 #import librosa
 
 def postprocess_features(feats):
@@ -51,9 +52,13 @@ def get_batch_encoder_input(batch_samples):
     # print(sample_rates)
     # print(filenames)
 
-    features = [get_feature(batch_sample[0]) for batch_sample in batch_samples] 
+    # start = time.time()
+    features = [get_feature(batch_sample[0]) for batch_sample in batch_samples]
+    
     filenames = [filename[1] for filename in batch_samples]
     features = torch.nn.utils.rnn.pad_sequence(features, batch_first=True, padding_value=0)
+    # end = time.time()
+    # print(f'{end-start} seconds')
     return features, filenames
 
 

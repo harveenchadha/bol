@@ -89,7 +89,7 @@ class Wav2vec2Fairseq(BolModel):
 
     def predict_in_batch(self, file_paths, can_use_lm):
         # Hardcoding #
-        dataloader_obj = Wav2Vec2FDataLoader(train_batch_size = 1, num_workers= 4 ,file_data_path = file_paths)
+        dataloader_obj = Wav2Vec2FDataLoader(train_batch_size = 1, num_workers= 2 ,file_data_path = file_paths)
         dataloader = dataloader_obj.get_file_data_loader()
 
         if not can_use_lm:
