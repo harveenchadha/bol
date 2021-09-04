@@ -115,6 +115,7 @@ class Wav2Vec2FDataLoader:
                                                         batch_size=train_batch_size,
                                                         shuffle=False,
                                                         num_workers=num_workers,
+                                                        pin_memory= True,
                                                         collate_fn=get_batch_encoder_input)
 
         return file_data_loader

@@ -40,7 +40,7 @@ for indx, line in enumerate(file):
          } 
 
 MODEL_MAPPING = models
-print(MODEL_MAPPING)
+
 # MODEL_MAPPING={
 #     'hi-quant' : { 'lang_code' : 'hi-IN',
 #                 'backend' : 'torchscript',
