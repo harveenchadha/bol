@@ -8,7 +8,7 @@ Usage:
 ```
 from bol.models import load_model
 
-model = load_model('hi-quant')
+model = load_model('hi-ts')
 
 text = model.predict(['/home/harveen/bol/dev/long/virat.wav'])   
 
