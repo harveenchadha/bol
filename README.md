@@ -1,5 +1,5 @@
 # bol
-Open Source Speech To Text Engines
+Speech Recognition Library for Indic Languages
 
 ## Do Speech Recognition in 3 lines of code
 
