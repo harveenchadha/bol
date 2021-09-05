@@ -5,3 +5,4 @@ torchaudio
 ffmpeg-python
 sox
 python_Levenshtein
+joblib

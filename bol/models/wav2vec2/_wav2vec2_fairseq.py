@@ -100,10 +100,14 @@ class Wav2vec2Fairseq(BolModel):
         return filenames, predictions
 
 
-    def predict(self, file_path, with_lm=False, return_filenames = False, apply_vad = False):
+    def predict(self, file_path, with_lm=False, return_filenames = True, apply_vad = False):
         text = ''
 
         can_use_lm = with_lm and self.lm_path
+        
+        if type(file_path) == str:
+            file_path = [file_path]
+
 
         if len(file_path) == 1:
             if not can_use_lm and not apply_vad:
@@ -126,10 +130,16 @@ class Wav2vec2Fairseq(BolModel):
                     ##experimental
                     text = get_results_for_single_file(file_path[0], self.dict_path, self.get_decoder(), self.get_model(), self.use_cuda_if_available)
 
-            final_preds = [{'file':file_path[0], 'transcription':text}]
+            if return_filenames:
+                final_preds = [{'file':file_path[0], 'transcription':text}]
+            else:
+                final_preds = text
         else:
             filenames, predictions = self.predict_in_batch(file_path, can_use_lm)
             preds = zip(filenames, predictions)
-            final_preds = [{'file':key, 'transcription':value} for key, value in preds]
-        
+            if return_filenames:
+                final_preds = [{'file':key, 'transcription':value} for key, value in preds]
+            else:
+                final_preds = predictions
+
         return final_preds

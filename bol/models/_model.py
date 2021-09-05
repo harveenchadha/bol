@@ -24,9 +24,9 @@ class BolModel:
         #get dataloader
         pass
 
-    def predict_from_dir(self, dir_path, ext, return_filenames = True, with_lm=False):
+    def predict_from_dir(self, dir_path, ext,  with_lm=False):
         file_path = glob.glob(dir_path+'/*.' + ext, recursive=True)
-        return self.predict(file_path, return_filenames = return_filenames, with_lm = with_lm)
+        return self.predict(file_path, return_filenames = True, with_lm = with_lm)
 
 
     def preprocess_vad(self, wav_path):
@@ -65,21 +65,33 @@ class BolModel:
 
         return calculated_metrics
 
-    def evaluate(self, audio_file_paths, text_file_paths, return_preds = False,  metrics = ['wer', 'cer']):
+    def evaluate(self, audio_file_paths, text_file_paths, with_lm=False, return_preds = False,  metrics = ['wer', 'cer']):
+        if type(audio_file_paths) == str:
+            audio_file_paths = [audio_file_paths]
+
+        if type(text_file_paths) == str:
+            text_file_paths = [text_file_paths]
+
         if len(audio_file_paths) != len(text_file_paths):
             raise Exception("The value of ground truth and preds should be same")
 
-        predictions = self.predict(audio_file_paths, return_filenames = True)
+        predictions = self.predict(audio_file_paths, with_lm=with_lm, return_filenames = True)
         ground_truth = load_text_files_in_parallel(text_file_paths)
+
+        if return_preds:
+            return self.calculate_metrics(metrics, ground_truth, predictions), predictions
 
         return self.calculate_metrics(metrics, ground_truth, predictions)
         
 
 
-    def evaluate_from_dir(self, dir_path, ext, text_dir_path, return_preds=False, metrics = ['wer', 'cer']):
-        predictions = self.predict_from_dir(dir_path, ext, return_filenames = True)
+    def evaluate_from_dir(self, dir_path,  text_dir_path, ext, with_lm=False, return_preds=False, metrics = ['wer', 'cer']):
+        predictions = self.predict_from_dir(dir_path, ext, with_lm=with_lm)
         ground_truth = load_text_files_in_parallel_from_dir(text_dir_path)
 
+        if return_preds:
+            return self.calculate_metrics(metrics, ground_truth, predictions), predictions
+        
         return self.calculate_metrics(metrics, ground_truth, predictions)
 
 

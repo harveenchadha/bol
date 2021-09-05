@@ -24,6 +24,8 @@ def load_model( unique_code = None,
         model_paths = setup_model_on_local(unique_code, model_obj, force_download)
         print("Zoo: ", model_paths)
 
+        if model_obj['backend'] == 'torchscript':
+            use_lm=False
         if use_lm and len(model_obj['urls']['lm_url']) > 0:
             lm_paths = setup_language_model_on_local(unique_code, model_obj)
             print("Zoo: ", lm_paths)
@@ -31,6 +33,8 @@ def load_model( unique_code = None,
         model_paths = get_model_from_local(backend, algo, use_lm, args = kwargs)
         print("Local:" , model_paths)
 
+    if not model_paths:
+        raise Exception("The model is not present in bol model zoo and you have not specified a local model to load as well.")
 
     if model_obj['algo'] == 'wav2vec2':
         if model_obj['backend'] == 'torchscript':

@@ -65,6 +65,10 @@ class Wav2Vec2TS(BolModel):
         preds = []
         filenames = []
 
+
+        if type(file_path) == str:
+            file_path = [file_path]
+            
         if apply_vad:
             for file in file_path:
                 files_split_from_vad = self.preprocess_vad(file)
@@ -94,8 +98,10 @@ class Wav2Vec2TS(BolModel):
         
         predictions = dict(zip(filenames, preds))
         
-
-        final_preds = [{'file':key, 'transcription':value} for key, value in predictions.items()]
+        if return_filenames:
+            final_preds = [{'file':key, 'transcription':value} for key, value in predictions.items()]
+        else:
+            final_preds = preds
 
         return final_preds
 
