@@ -3,7 +3,7 @@ from fairseq.models.wav2vec.wav2vec2_asr import Wav2VecEncoder, Wav2Vec2CtcConfi
 from fairseq import utils
 from bol.inference import load_decoder
 import time
-from .._model import BolModel
+from bol.models import BolModel
 from bol.inference import get_results_for_batch, get_results_for_single_file
 from bol.data import Wav2Vec2FDataLoader
 

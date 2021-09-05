@@ -1,5 +1,5 @@
-from .wav2vec2._wav2vec2_fairseq import Wav2vec2Fairseq
-from .wav2vec2._wav2vec2_ts import Wav2Vec2TS
+from bol.models import Wav2vec2Fairseq
+from bol.models import Wav2Vec2TS
 from bol.utils.model_zoo import get_model_from_params, get_model_from_unique_code, get_model_from_local, setup_model_on_local,setup_language_model_on_local
 
 def load_model( unique_code = None, 

@@ -5,12 +5,12 @@ import os
 import setuptools
 
 
-setup(name='bol',
+setup(name='bol-library',
       version='0.1',
-      description='Speech to Text Library',
+      description='Speech to Text Library plus addons',
       url='https://github.com/harveenchadha/bol/',
       author='Harveen Singh Chadha',
-      author_email='harveen54@gmail.com',
+      author_email='harveensinghchadha@gmail.com',
       license='MIT',
 #       packages=['bol',
 #                  'bol.inference'],
