@@ -23,7 +23,7 @@ Output:
 
 ## Current Models that are available
 
-| unique_code | lang_code | backend | algo | description | provider | LM Support | CPU | GPU |
+| Unique Code | Language Code | Backend | Algo | Language | provider | LM Support | CPU | GPU |
 |------------|------------|--------|-------|-------------|----------|-------------|----|----|
 | hi-ts | hi-IN | torchscript | wav2vec2 | Hindi | vakyansh_ekstep |  ✖️ | ✔️ | ✖️ |
 | bn-ts | bn-IN | torchscript | wav2vec2 | Bengali | vakyansh_ekstep | ✖️ | ✔️ | ✖️ |
