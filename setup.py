@@ -6,7 +6,7 @@ import setuptools
 
 
 setup(name='bol-library',
-      version='0.14',
+      version='0.141',
       description='Speech to Text Library plus addons',
       url='https://github.com/harveenchadha/bol/',
       author='Harveen Singh Chadha',

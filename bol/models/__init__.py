@@ -1,12 +1,20 @@
-#from .wav2vec2._wav2vec2_fairseq import Wav2vec2Fairseq, Wav2VecCtc
+no_exception = 0
+
+try:
+    from .wav2vec2._wav2vec2_fairseq import Wav2vec2Fairseq, Wav2VecCtc
+except:
+    no_exception = 1
+
 from .wav2vec2._wav2vec2_ts import Wav2Vec2TS
 from ._load_model import load_model
 from ._model import BolModel
 
 __all__=[
-#    "Wav2vec2Fairseq",
-#    "Wav2VecCtc",
     "Wav2Vec2TS",
     "load_model",
     "BolModel",
 ]
+
+if no_exception == 0:
+    __all__.append("Wav2vec2Fairseq")
+    __all__.append("Wav2VecCtc")

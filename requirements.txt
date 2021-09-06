@@ -1,7 +1,8 @@
 #pypi-kenlm
 #fairseq @ git+https://github.com/Open-Speech-EkStep/fairseq@v2-hydra#egg=fairseq
 
-torchaudio
+torch>=1.8
+torchaudio>=0.9
 ffmpeg-python
 sox
 python_Levenshtein
