@@ -146,4 +146,4 @@ def get_model_from_local(backend, algo, use_lm, args):
 
             return [model_path, dict_path] , [lm_path, lexicon_path]
 
-        return [model_path, dict_path]
+        return [model_path, dict_path] , []

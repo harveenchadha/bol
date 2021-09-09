@@ -65,7 +65,7 @@ def process_batch(batch,model,generator, target_dict, use_cuda, half):
     filenames = batch[1]
     return prediction, filenames
 
-def get_results_for_batch(data_loader,dict_path,generator,model,use_cuda=False,w2v_path=None, half=None):
+def get_results_for_batch(data_loader,dict_path,generator,model,use_cuda=False,w2v_path=None, half=None, verbose=0):
     predictions = []
     filenames = []
 
@@ -73,7 +73,11 @@ def get_results_for_batch(data_loader,dict_path,generator,model,use_cuda=False,w
     model.eval()
     target_dict = Dictionary.load(dict_path)
 
-    for batch in tqdm(data_loader):
+    if verbose:
+        disable=False
+    else:
+        disable=True
+    for batch in tqdm(data_loader, disable=disable):
         prediction, filename = process_batch(batch, model=model, generator=generator, target_dict=target_dict, use_cuda=use_cuda, half=half)
         predictions.append(prediction)
         filenames.append(filename)

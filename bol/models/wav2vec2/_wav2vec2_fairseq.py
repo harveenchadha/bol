@@ -3,7 +3,7 @@ from fairseq.models.wav2vec.wav2vec2_asr import Wav2VecEncoder, Wav2Vec2CtcConfi
 from fairseq import utils
 from bol.inference import load_decoder
 import time
-from bol.models import BolModel
+from .._model import BolModel
 from bol.inference import get_results_for_batch, get_results_for_single_file
 from bol.data import Wav2Vec2FDataLoader
 
@@ -87,20 +87,20 @@ class Wav2vec2Fairseq(BolModel):
         # print('Viterbi Loaded in '+ str(end_viterbi-end) + ' seconds')
 
 
-    def predict_in_batch(self, file_paths, can_use_lm):
+    def predict_in_batch(self, file_paths, can_use_lm, verbose):
         # Hardcoding #
         dataloader_obj = Wav2Vec2FDataLoader(train_batch_size = 1, num_workers= 2 ,file_data_path = file_paths)
         dataloader = dataloader_obj.get_file_data_loader()
 
         if not can_use_lm:
-            filenames, predictions = get_results_for_batch(dataloader, self.dict_path, self.get_alternative_decoder(), self.get_model(),  self.use_cuda_if_available)
+            filenames, predictions = get_results_for_batch(dataloader, self.dict_path, self.get_alternative_decoder(), self.get_model(),  self.use_cuda_if_available, verbose = verbose)
         else:
-            filenames, predictions = get_results_for_batch(dataloader, self.dict_path, self.get_decoder(), self.get_model(), self.use_cuda_if_available)
+            filenames, predictions = get_results_for_batch(dataloader, self.dict_path, self.get_decoder(), self.get_model(), self.use_cuda_if_available, verbose = verbose)
 
         return filenames, predictions
 
 
-    def predict(self, file_path, with_lm=False, return_filenames = True, apply_vad = False):
+    def predict(self, file_path, with_lm=False, return_filenames = True, apply_vad = False, verbose=0):
         text = ''
 
         can_use_lm = with_lm and self.lm_path
@@ -121,7 +121,7 @@ class Wav2vec2Fairseq(BolModel):
                         file_paths.extend( self.preprocess_vad(local_file) )
                     #print(file_paths)
 
-                    filenames, predictions = self.predict_in_batch(file_paths, can_use_lm)
+                    filenames, predictions = self.predict_in_batch(file_paths, can_use_lm, verbose)
 
                     preds = self.postprocess_vad(filenames, predictions)
                     text = preds
@@ -135,7 +135,7 @@ class Wav2vec2Fairseq(BolModel):
             else:
                 final_preds = text
         else:
-            filenames, predictions = self.predict_in_batch(file_path, can_use_lm)
+            filenames, predictions = self.predict_in_batch(file_path, can_use_lm, verbose)
             preds = zip(filenames, predictions)
             if return_filenames:
                 final_preds = [{'file':key, 'transcription':value} for key, value in preds]

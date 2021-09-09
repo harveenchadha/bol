@@ -1,4 +1,5 @@
 
+from os import terminal_size
 from .._model import BolModel
 from bol.data import Wav2Vec2TsDataLoader
 from tqdm import tqdm
@@ -34,10 +35,16 @@ class Wav2Vec2TS(BolModel):
 
     #     return dict(zip(preds, filenames))
 
-    def load_files_using_torchaudio(self, file_path):
+    def load_files_using_torchaudio(self, file_path, verbose):
         preds = []
         filenames = []
-        for file in tqdm(file_path):
+
+        if verbose:
+            disable=False
+        else:
+            disable=True
+
+        for file in tqdm(file_path, disable=disable):
             wav, _ = torchaudio.load(file)
             pred = self._model(wav)
             preds.append(pred)
@@ -46,7 +53,7 @@ class Wav2Vec2TS(BolModel):
 
 
 
-    def predict(self, file_path, with_lm = False, return_filenames = True, apply_vad = False):
+    def predict(self, file_path, with_lm = False, return_filenames = True, apply_vad = False, verbose=0):
         # ## works in dataloader but output is not correct ##
         # dataloader_obj = Wav2Vec2TsDataLoader(batch_size = 8, num_workers= 4 ,file_data_path = file_path)
         # dataloader = dataloader_obj.get_file_data_loader()
@@ -72,13 +79,13 @@ class Wav2Vec2TS(BolModel):
         if apply_vad:
             for file in file_path:
                 files_split_from_vad = self.preprocess_vad(file)
-                preds_local, filenames_local = self.load_files_using_torchaudio(files_split_from_vad)
+                preds_local, filenames_local = self.load_files_using_torchaudio(files_split_from_vad, verbose)
                 predictions = self.postprocess_vad(filenames_local, preds_local)
                 preds.append(predictions)
                 filenames.append(file)
                 
         else:
-            preds, filenames = self.load_files_using_torchaudio(file_path)
+            preds, filenames = self.load_files_using_torchaudio(file_path, verbose)
         
 
         # def load_file(local_file):

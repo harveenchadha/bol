@@ -26,7 +26,7 @@ class BolModel:
 
     def predict_from_dir(self, dir_path, ext,  with_lm=False):
         file_path = glob.glob(dir_path+'/*.' + ext, recursive=True)
-        return self.predict(file_path, return_filenames = True, with_lm = with_lm)
+        return self.predict(file_path, return_filenames = True, with_lm = with_lm, verbose=1)
 
 
     def preprocess_vad(self, wav_path):
