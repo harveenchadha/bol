@@ -44,8 +44,8 @@ class Wav2Vec2TS(BolModel):
         else:
             disable=True
 
-        dataloader_obj = Wav2Vec2TsDataLoader(batch_size = 4, num_workers = 4 ,file_data_path = file_path)
-        dataloader = dataloader_obj.get_file_data_loader()
+        # dataloader_obj = Wav2Vec2TsDataLoader(batch_size = 4, num_workers = 4 ,file_data_path = file_path)
+        # dataloader = dataloader_obj.get_file_data_loader()
 
 
         # def load_file_in_parallel(file):
