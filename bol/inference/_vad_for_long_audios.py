@@ -2,17 +2,15 @@
 
 
 
-import soundfile as sf
+
 import sys
 import collections
 import os
 from bol.utils.helper_functions import install
-import webrtcvad
 from bol.utils.helper_functions import get_audio_duration
 
 
 def get_vad_object(aggressiveness):
-
     return webrtcvad.Vad(aggressiveness)
 
 
@@ -157,6 +155,7 @@ def call_vad(path):
         import webrtcvad
     except:
         install('webrtcvad')
+        import webrtcvad
 
 
     audio, sample_rate = read_wave(path)

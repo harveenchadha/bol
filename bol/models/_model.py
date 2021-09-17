@@ -32,7 +32,7 @@ class BolModel:
     def preprocess_vad(self, wav_path):
         duration = get_audio_duration(wav_path)
         file_paths = []
-        if duration > 15:
+        if duration > 10:
             file_paths = call_vad(wav_path)
         else:
             file_paths.append(wav_path)

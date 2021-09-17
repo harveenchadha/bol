@@ -3,10 +3,8 @@ from torch.utils.data import DataLoader, Dataset
 import torch.nn.functional as F
 import glob
 import soundfile as sf
-#from bol.utils import convert_using_sox
-#import torchaudio
-#import numpy as np
-import sox
+
+
 import time
 #import librosa
 
@@ -30,11 +28,7 @@ def audio_preprocessing(batch):
 
 #resampler = torchaudio.transforms.Resample(8_000, 16_000)
 
-tfm = sox.Transformer()
-tfm.set_output_format(rate=16000)
 
-def convert_using_sox(file, sample_rate=8000):        
-    return tfm.build_array(input_array=file, sample_rate_in=sample_rate)
 
 def get_batch_encoder_input(batch_samples):
     # print(batch_samples)
