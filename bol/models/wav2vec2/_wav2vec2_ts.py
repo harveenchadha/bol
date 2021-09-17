@@ -44,19 +44,48 @@ class Wav2Vec2TS(BolModel):
         else:
             disable=True
 
+        dataloader_obj = Wav2Vec2TsDataLoader(batch_size = 4, num_workers = 4 ,file_data_path = file_path)
+        dataloader = dataloader_obj.get_file_data_loader()
+
+
+        # def load_file_in_parallel(file):
+        #     wav, _ = torchaudio.load(file)
+        #     return wav
+
+        # wavs=[]
+        # wavs.extend(Parallel(n_jobs=-1)(delayed(load_file_in_parallel)(file) for file in tqdm(file_path)))
+
+        # for file, wav in tqdm(zip(file_path, wavs), disable=disable):
+        #     pred = self._model(wav)
+        #     preds.append(pred)
+        #     filenames.extend(file)
+
         for file in tqdm(file_path, disable=disable):
             wav, _ = torchaudio.load(file)
             pred = self._model(wav)
             preds.append(pred)
-            filenames.append(file)
+            filenames.extend(file)
+
+
+        # for batch in tqdm(dataloader, disable=disable):
+        #     #wav, _ = torchaudio.load(file)
+        #     wav = batch[0].squeeze(1)
+        #     file = batch[1]
+        #     #print(wav)
+        #     pred = self._model(wav)
+            
+        #     preds.append(pred)
+        #     filenames.extend(file)
+
+
+
+
         return preds, filenames
 
 
 
     def predict(self, file_path, with_lm = False, return_filenames = True, apply_vad = False, verbose=0):
         # ## works in dataloader but output is not correct ##
-        # dataloader_obj = Wav2Vec2TsDataLoader(batch_size = 8, num_workers= 4 ,file_data_path = file_path)
-        # dataloader = dataloader_obj.get_file_data_loader()
 
         # new_preds = []
         # new_filenames = []
