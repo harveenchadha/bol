@@ -1,23 +1,15 @@
 ## Taken from https://github.com/wiseman/py-webrtcvad/blob/master/example.py
 
 
-
-
-import sys
 import collections
 import os
+
 from bol.utils.helper_functions import install
-from bol.utils.helper_functions import get_audio_duration
-
-
-def get_vad_object(aggressiveness):
-    return webrtcvad.Vad(aggressiveness)
-
-
 
 
 class Frame(object):
     """Represents a "frame" of audio data."""
+
     def __init__(self, bytes, timestamp, duration):
         self.bytes = bytes
         self.timestamp = timestamp
@@ -35,17 +27,17 @@ def frame_generator(frame_duration_ms, audio, sample_rate):
     timestamp = 0.0
     duration = (float(n) / sample_rate) / 2.0
     while offset + n < len(audio):
-        yield Frame(audio[offset:offset + n], timestamp, duration)
+        yield Frame(audio[offset : offset + n], timestamp, duration)
         timestamp += duration
         offset += n
+
 
 # def read_wave(path):
 #     waveform, sample_rate = sf.read(path)
 #     return waveform, sample_rate
 
 
-def vad_collector(sample_rate, frame_duration_ms,
-                  padding_duration_ms, vad, frames):
+def vad_collector(sample_rate, frame_duration_ms, padding_duration_ms, vad, frames):
     """Filters out non-voiced audio frames.
     Given a webrtcvad.Vad and a source of audio frames, yields only
     the voiced audio.
@@ -85,7 +77,7 @@ def vad_collector(sample_rate, frame_duration_ms,
             # TRIGGERED state.
             if num_voiced > 0.9 * ring_buffer.maxlen:
                 triggered = True
-                #sys.stdout.write('+(%s)' % (ring_buffer[0][0].timestamp,))
+                # sys.stdout.write('+(%s)' % (ring_buffer[0][0].timestamp,))
                 # We want to yield all the audio we see from now until
                 # we are NOTTRIGGERED, but we have to start with the
                 # audio that's already in the ring buffer.
@@ -102,9 +94,9 @@ def vad_collector(sample_rate, frame_duration_ms,
             # unvoiced, then enter NOTTRIGGERED and yield whatever
             # audio we've collected.
             if num_unvoiced > 0.9 * ring_buffer.maxlen:
-                #sys.stdout.write('-(%s)' % (frame.timestamp + frame.duration))
+                # sys.stdout.write('-(%s)' % (frame.timestamp + frame.duration))
                 triggered = False
-                yield b''.join([f.bytes for f in voiced_frames])
+                yield b"".join([f.bytes for f in voiced_frames])
                 ring_buffer.clear()
                 voiced_frames = []
     # if triggered:
@@ -113,7 +105,7 @@ def vad_collector(sample_rate, frame_duration_ms,
     # If we have any leftover voiced audio when we run out of input,
     # yield it.
     if voiced_frames:
-        yield b''.join([f.bytes for f in voiced_frames])
+        yield b"".join([f.bytes for f in voiced_frames])
 
 
 # def write_wave(path, segment, sample_rate):
@@ -125,11 +117,12 @@ def vad_collector(sample_rate, frame_duration_ms,
 import contextlib
 import wave
 
+
 def read_wave(path):
     """Reads a .wav file.
     Takes the path, and returns (PCM audio data, sample rate).
     """
-    with contextlib.closing(wave.open(path, 'rb')) as wf:
+    with contextlib.closing(wave.open(path, "rb")) as wf:
         num_channels = wf.getnchannels()
         assert num_channels == 1
         sample_width = wf.getsampwidth()
@@ -139,40 +132,42 @@ def read_wave(path):
         pcm_data = wf.readframes(wf.getnframes())
         return pcm_data, sample_rate
 
+
 def write_wave(path, audio, sample_rate):
     """Writes a .wav file.
     Takes path, PCM audio data, and sample rate.
     """
-    with contextlib.closing(wave.open(path, 'wb')) as wf:
+    with contextlib.closing(wave.open(path, "wb")) as wf:
         wf.setnchannels(1)
         wf.setsampwidth(2)
         wf.setframerate(sample_rate)
         wf.writeframes(audio)
+
 
 def call_vad(path):
 
     try:
         import webrtcvad
     except:
-        install('webrtcvad')
+        install("webrtcvad")
         import webrtcvad
 
-
     audio, sample_rate = read_wave(path)
-    print("Path: ", path)
-    print("Sample rate", sample_rate)
-    vad = get_vad_object(3)
+    # print("Path: ", path)
+    # print("Sample rate", sample_rate)
+    aggressiveness = 3
+    vad = webrtcvad.Vad(aggressiveness)
     frames = frame_generator(30, audio, sample_rate)
     frames = list(frames)
-    print("Total number of frames are ", len(frames))
+    # print("Total number of frames are ", len(frames))
     segments = vad_collector(sample_rate, 30, 300, vad, frames)
     # print("Total segments are ", len(segments))
-    filename = path.split('/')[-1].split('.')[0]
-    file_paths=[]
+    filename = path.split("/")[-1].split(".")[0]
+    file_paths = []
     for i, segment in enumerate(segments):
-        os.makedirs('/tmp/'+filename, exist_ok=True)
-        path = '/tmp/'+filename+'/chunk-%002d.wav' % (i,)
+        os.makedirs("/tmp/" + filename, exist_ok=True)
+        path = "/tmp/" + filename + "/chunk-%002d.wav" % (i,)
         file_paths.append(path)
-        print(' Writing %s' % (path,))
+        # print(' Writing %s' % (path,))
         write_wave(path, segment, sample_rate)
     return file_paths

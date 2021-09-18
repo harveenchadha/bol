@@ -18,7 +18,6 @@ import sox
 from google.colab.output import eval_js
 from IPython.display import HTML, display
 
-
 AUDIO_HTML = """
 <script>
 var recordButton = document.createElement("BUTTON");
