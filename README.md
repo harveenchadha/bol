@@ -4,7 +4,7 @@ Speech Recognition Library for Indic Languages
 ## Installation (Currently in Alpha)
 
 ```
-pip install --upgrade bol-library==0.1.1
+pip install --upgrade bol-library==0.1.7
 ```
 
 ## Do Speech Recognition in 3 lines of code
