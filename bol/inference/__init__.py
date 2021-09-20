@@ -1,7 +1,9 @@
 no_exception = 0
 
 try:
-    pass
+    from .decoders._wav2vec2_decoder import load_decoder
+    from .wav2vec2_fairseq._wav2vec2_infer_single import get_results_for_single_file
+    from .wav2vec2_fairseq._wav2vec2_infer_batch import get_results_for_batch
 except:
     no_exception = 1
 

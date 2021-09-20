@@ -1,7 +1,9 @@
 import torchaudio
+import torch
 from tqdm import tqdm
-
+from bol.utils.helper_functions import convert_audio_to_16k, read_wav_file, convert_audio, get_sample_rate
 from .._model import BolModel
+from bol.data import Wav2Vec2TsDataLoader
 
 
 class Wav2Vec2TS(BolModel):
@@ -26,7 +28,7 @@ class Wav2Vec2TS(BolModel):
 
     #     return dict(zip(preds, filenames))
 
-    def load_files_using_torchaudio(self, file_path, verbose):
+    def predict_using_torchaudio(self, file_path, verbose, dataloader=False):
         preds = []
         filenames = []
 
@@ -35,36 +37,27 @@ class Wav2Vec2TS(BolModel):
         else:
             disable = True
 
-        # dataloader_obj = Wav2Vec2TsDataLoader(batch_size = 4, num_workers = 4 ,file_data_path = file_path)
-        # dataloader = dataloader_obj.get_file_data_loader()
+        if dataloader:
+            dataloader_obj = Wav2Vec2TsDataLoader(batch_size = 1, num_workers = 1 ,file_data_path = file_path)
+            dataloader = dataloader_obj.get_file_data_loader()
 
-        # def load_file_in_parallel(file):
-        #     wav, _ = torchaudio.load(file)
-        #     return wav
+            for batch in tqdm(dataloader, disable=disable):
+                wav = batch[0].squeeze(1)
+                file = batch[1]
+                pred = self._model(wav)
+                preds.append(pred)
+                filenames.extend(file)
 
-        # wavs=[]
-        # wavs.extend(Parallel(n_jobs=-1)(delayed(load_file_in_parallel)(file) for file in tqdm(file_path)))
-
-        # for file, wav in tqdm(zip(file_path, wavs), disable=disable):
-        #     pred = self._model(wav)
-        #     preds.append(pred)
-        #     filenames.extend(file)
-
-        for file in tqdm(file_path, disable=disable):
-            wav, _ = torchaudio.load(file)
-            pred = self._model(wav)
-            preds.append(pred)
-            filenames.append(file)
-
-        # for batch in tqdm(dataloader, disable=disable):
-        #     #wav, _ = torchaudio.load(file)
-        #     wav = batch[0].squeeze(1)
-        #     file = batch[1]
-        #     #print(wav)
-        #     pred = self._model(wav)
-
-        #     preds.append(pred)
-        #     filenames.extend(file)
+        else:
+            for file in tqdm(file_path, disable=disable):
+                wav, sample_rate = read_wav_file(file, 'ta')
+                if sample_rate!= 16000: #hardcoding
+                    wav = convert_audio( file, sample_rate, 16000, 'sox')
+                    new_path = "/tmp/" + file.split('/')[-1]
+                    wav, sample_rate = read_wav_file(new_path, 'ta')
+                pred = self._model(wav)
+                preds.append(pred)
+                filenames.append(file)
 
         return preds, filenames
 
@@ -98,7 +91,7 @@ class Wav2Vec2TS(BolModel):
         if apply_vad:
             for file in file_path:
                 files_split_from_vad = self.preprocess_vad(file)
-                preds_local, filenames_local = self.load_files_using_torchaudio(
+                preds_local, filenames_local = self.predict_using_torchaudio(
                     files_split_from_vad, verbose
                 )
                 predictions = self.postprocess_vad(filenames_local, preds_local)
@@ -106,7 +99,7 @@ class Wav2Vec2TS(BolModel):
                 filenames.append(file)
 
         else:
-            preds, filenames = self.load_files_using_torchaudio(file_path, verbose)
+            preds, filenames = self.predict_using_torchaudio(file_path, verbose)
 
         # def load_file(local_file):
         #     wav, _ = torchaudio.load(local_file)

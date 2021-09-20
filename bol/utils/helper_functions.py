@@ -3,6 +3,10 @@ import sys
 
 import soundfile as sf
 import torch
+import scipy.signal as sps
+from scipy.io import wavfile
+import torchaudio
+
 
 
 def apply_to_sample(f, sample):
@@ -88,12 +92,50 @@ def read_txt_file(txt_path):
 
 def get_audio_duration(path):
     # return sox.file_info.duration(path)
-    f = sf.SoundFile(path)
-    return f.frames / f.samplerate
+    # f = sf.SoundFile(path)
+    # return f.frames / f.samplerate
+    return sf.info(path).duration
 
+def get_sample_rate(path):
+    # return sox.file_info.duration(path)
+    # f = sf.SoundFile(path)
+    # return f.frames / f.samplerate
+    return sf.info(path).samplerate
+
+def read_wav_file(path, type):
+    if type == 'sf':
+        return sf.read(path)
+    if type == 'ta':
+        return torchaudio.load(path)
+
+def write_audio_file(path, wav, sample_rate, type):
+    if type=='ta':
+        torchaudio.save(path, wav, sample_rate)
+
+def convert_audio(wav_file, sample_rate, downsample_rate, type):
+    if type=='ta':
+        return torchaudio.transforms.Resample(sample_rate, downsample_rate, resampling_method='kaiser_window')(wav_file)
+    if type=='sox':
+        subprocess.call(["sox {} -r {} -b 16 -c 1 {}".format(wav_file, str(16000), '/tmp/' + wav_file.split('/')[-1])], shell=True)
 
 def install(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+def convert_audio_using_scipy(signal, sample_rate):
+    new_sample_rate = 16000
+    # signal = signal.mean(-1)                                                                                                                           
+    number_of_samples = round(len(signal) * float(new_sample_rate) / sample_rate)                                                                                   
+    resampled_signal = sps.resample(signal, number_of_samples)
+    return resampled_signal
+
+def convert_audio_to_16k(wav_file):
+    # signal, sample_rate  = sf.read(wav_file)
+    sample_rate, signal = wavfile.read(wav_file)                                                                                                                        
+    #signal = signal.mean(-1)
+    new_sample_rate = 16000                                                                                                                              
+    number_of_samples = round(len(signal) * float(new_sample_rate) / sample_rate)                                                                                   
+    resampled_signal = sps.resample(signal, number_of_samples)
+    return resampled_signal
 
 
 # def convert_using_sox(file, sample_rate=8000):

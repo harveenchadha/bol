@@ -1,6 +1,7 @@
 import torch
 import torchaudio
 from torch.utils.data import Dataset
+from bol.utils.helper_functions import read_wav_file, convert_audio
 
 
 def get_batch_encoder_input(batch_samples):
@@ -34,9 +35,13 @@ class Wav2Vec2TsDataSet(Dataset):
         return features, self.audio_paths[index]
 
     def _get_feature(self, filepath):
-        wav, _ = torchaudio.load(filepath)
-        # wav, _ = sf.read(filepath)
-        # wav = torch.from_numpy(wav).float()
+        wav, sample_rate = read_wav_file(filepath, 'ta')
+        if sample_rate != 16000:
+            # wav = convert_audio(wav, sample_rate, 16000, 'ta')
+            if sample_rate!= 16000: #hardcoding
+                wav = convert_audio( filepath, sample_rate, 16000, 'sox')
+                new_path = "/tmp/" + filepath.split('/')[-1]
+                wav, sample_rate = read_wav_file(new_path, 'ta')
         return wav
 
 

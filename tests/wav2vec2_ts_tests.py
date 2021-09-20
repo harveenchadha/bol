@@ -55,17 +55,17 @@ class Directory(unittest.TestCase):
     #             local_pred = item['transcription']
     #     self.assertEqual( local_pred, self.single_kenlm_output, "Should be same")
 
-    def test_load_model_from_dir_3(self):
-        model = load_model("hi-ts", use_lm=False)
-        pred = model.predict_from_dir(dir_path="/home/harveen/bol/dev/eval", ext="wav")
-        local_pred = ""
-        for item in pred:
-            if (
-                item["file"].split("/")[-1]
-                == "ahd_28_long_1335_hin-002500-005500-1-1.wav"
-            ):
-                local_pred = item["transcription"]
-        self.assertEqual(local_pred, self.single_viterbi_output, "Should be same")
+    # def test_load_model_from_dir_3(self):
+    #     model = load_model("hi-ts", use_lm=False)
+    #     pred = model.predict_from_dir(dir_path="/home/harveen/bol/dev/eval", ext="wav")
+    #     local_pred = ""
+    #     for item in pred:
+    #         if (
+    #             item["file"].split("/")[-1]
+    #             == "ahd_28_long_1335_hin-002500-005500-1-1.wav"
+    #         ):
+    #             local_pred = item["transcription"]
+    #     self.assertEqual(local_pred, self.single_viterbi_output, "Should be same")
 
     # def test_load_model_from_dir_4(self):
     #     model = load_model('hi-IN', use_lm=False)
@@ -75,6 +75,20 @@ class Directory(unittest.TestCase):
     #         if item['file'].split('/')[-1] == 'ahd_28_long_1335_hin-002500-005500-1-1.wav':
     #             local_pred = item['transcription']
     #     self.assertEqual( local_pred, self.single_viterbi_output, "Should be same")
+
+    def test_load_model_from_dir_5_long(self):
+        model = load_model("hi-ts", use_lm=False)
+        #pred = model.predict_from_dir(dir_path="/home/harveen/bol/dev/eval", ext="wav")
+        pred = model.predict("/home/harveen/Downloads/test.wav", apply_vad=True, verbose=1)
+        local_pred = ""
+        for item in pred:
+            if (
+                item["file"].split("/")[-1]
+                == "ahd_28_long_1335_hin-002500-005500-1-1.wav"
+            ):
+                local_pred = item["transcription"]
+        self.assertEqual(local_pred, self.single_viterbi_output, "Should be same")
+
 
 
 if __name__ == "__main__":

@@ -1,7 +1,10 @@
+from typing_extensions import ParamSpecKwargs
+
+
 try:
     from .wav2vec2._wav2vec2_fairseq import Wav2vec2Fairseq
 except:
-    pass
+     pass
 from bol.utils.model_zoo import (get_model_from_local, get_model_from_params,
                                  get_model_from_unique_code,
                                  setup_language_model_on_local,

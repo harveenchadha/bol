@@ -5,6 +5,7 @@ import collections
 import os
 
 from bol.utils.helper_functions import install
+from bol.utils.helper_functions import convert_audio_using_scipy
 
 
 class Frame(object):
@@ -30,11 +31,6 @@ def frame_generator(frame_duration_ms, audio, sample_rate):
         yield Frame(audio[offset : offset + n], timestamp, duration)
         timestamp += duration
         offset += n
-
-
-# def read_wave(path):
-#     waveform, sample_rate = sf.read(path)
-#     return waveform, sample_rate
 
 
 def vad_collector(sample_rate, frame_duration_ms, padding_duration_ms, vad, frames):
