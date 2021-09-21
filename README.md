@@ -4,7 +4,11 @@ Speech Recognition Library for Indic Languages
 ## Installation (Currently in Alpha)
 
 ```
-pip install --upgrade bol-library==0.1.7
+
+sudo apt-get install sox libsox-fmt-mp3 libsndfile1
+
+pip install --upgrade bol-library==0.1.8
+
 ```
 
 ## Do Speech Recognition in 3 lines of code
@@ -16,7 +20,7 @@ from bol.models import load_model
 
 model = load_model('hi-ts')
 
-text = model.predict(['/home/harveen/bol/dev/long/virat.wav'])   
+text = model.predict('/home/harveen/bol/dev/long/virat.wav')   
 
 ```
 
