@@ -2,7 +2,7 @@
 #fairseq @ git+https://github.com/Open-Speech-EkStep/fairseq@v2-hydra#egg=fairseq
 
 torch>=1.8
-torchaudio>=0.8
+# torchaudio>=0.8
 #ffmpeg-python
 python_Levenshtein
 joblib

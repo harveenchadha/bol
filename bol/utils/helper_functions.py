@@ -5,7 +5,12 @@ import soundfile as sf
 import torch
 import scipy.signal as sps
 from scipy.io import wavfile
-import torchaudio
+try:
+    import torchaudio
+except:
+    pass
+import subprocess
+from .resampler import resample_using_ffmpeg
 
 
 
@@ -91,15 +96,9 @@ def read_txt_file(txt_path):
 
 
 def get_audio_duration(path):
-    # return sox.file_info.duration(path)
-    # f = sf.SoundFile(path)
-    # return f.frames / f.samplerate
     return sf.info(path).duration
 
 def get_sample_rate(path):
-    # return sox.file_info.duration(path)
-    # f = sf.SoundFile(path)
-    # return f.frames / f.samplerate
     return sf.info(path).samplerate
 
 def read_wav_file(path, type):
@@ -137,8 +136,20 @@ def convert_audio_to_16k(wav_file):
     resampled_signal = sps.resample(signal, number_of_samples)
     return resampled_signal
 
+def convert_to_tensor(arr):
+    return torch.from_numpy(arr).float().unsqueeze(0)
 
-# def convert_using_sox(file, sample_rate=8000):
-#     tfm = sox.Transformer()
-#     tfm.set_output_format(rate=16000)
-#     return tfm.build_array(input_array=file, sample_rate_in=sample_rate)
+def convert_mp3_to_wav(input_file, output_file=None, resample=False):
+    if input_file[-3:] !='mp3':
+        raise ValueError("File is not mp3")
+
+    if not output_file:
+        output_file = '/tmp/' + input_file.split('/')[-1][:-3] + 'wav'
+
+    
+    if resample:
+        output_file = resample_using_ffmpeg(input_file=input_file, output_file=output_file)
+    else:
+        subprocess.call(['ffmpeg', '-y', '-i', input_file, output_file], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+
+    return output_file

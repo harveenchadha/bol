@@ -1,7 +1,6 @@
 import torch
-import torchaudio
 from torch.utils.data import Dataset
-from bol.utils.helper_functions import read_wav_file
+from bol.utils.helper_functions import read_wav_file, convert_to_tensor
 from bol.utils.resampler import resample_using_sox
 
 
@@ -37,9 +36,10 @@ class Wav2Vec2TsDataSet(Dataset):
         return features, self.audio_paths[index]
 
     def _get_feature(self, filepath):
-        wav, sample_rate = read_wav_file(filepath, 'ta')
+        wav, sample_rate = read_wav_file(filepath, 'sf')
         if sample_rate != 16000 and self.convert:
-            wav = resample_using_sox(wav, input_type='array', output_filepath='array', sample_rate_in=sample_rate)
+            wav = resample_using_sox(wav, input_type='array', output_type='array', sample_rate_in=sample_rate)
+            wav = convert_to_tensor(wav)
         return wav
 
 

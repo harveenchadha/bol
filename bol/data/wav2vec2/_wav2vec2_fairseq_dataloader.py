@@ -73,28 +73,8 @@ class Wav2VecDataset(Dataset):
 
     def _get_feature(self, filepath):
         wav, sample_rate = sf.read(filepath)
-        # if sample_rate != 16000:
-        #     wav = convert_using_sox(wav, sample_rate)
         wav = torch.from_numpy(wav).float()
-
-        # wav = wav.to('cuda')
-
-        # wav2, sample_rate2 = torchaudio.load(filepath)
-        # speech = resampler(wav2).squeeze().numpy()
-
-        # print("SF", wav)
-        # print("TA", speech)
-
-        # print(torch.all(wav.eq(speech)))
-
-        # y, s = librosa.load(filepath, sr=16000)
-        # # print(wav)
-        # wav2 = torch.from_numpy(y).float()
-        # print(wav2)
-
-        # print(torch.all(wav.eq(wav2)))
-
-        return wav  # , sample_rate
+        return wav
 
 
 class Wav2Vec2FDataLoader:

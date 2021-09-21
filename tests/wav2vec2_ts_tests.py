@@ -5,6 +5,7 @@ import unittest
 sys.path.insert(0, os.path.dirname("../bol"))
 
 from bol.models import load_model
+from bol.utils.helper_functions import convert_mp3_to_wav
 
 # class SingleFile(unittest.TestCase):
 #     def setUp(self):
@@ -76,24 +77,40 @@ class Directory(unittest.TestCase):
     #             local_pred = item['transcription']
     #     self.assertEqual( local_pred, self.single_viterbi_output, "Should be same")
 
-    def test_load_model_from_dir_5_long(self):
-        model = load_model("hi-ts", use_lm=False)
-        #pred = model.predict_from_dir(dir_path="/home/harveen/bol/dev/eval", ext="wav")
-        pred = model.predict("/home/harveen/Downloads/test.wav", apply_vad=True, verbose=1)
-        local_pred = ""
-        print(pred)
-        for item in pred:
-            if (
-                item["file"].split("/")[-1]
-                == "ahd_28_long_1335_hin-002500-005500-1-1.wav"
-            ):
-                local_pred = item["transcription"]
-        self.assertEqual(local_pred, self.single_viterbi_output, "Should be same")
+    # def test_load_model_from_dir_5_long(self):
+    #     model = load_model("hi-ts", use_lm=False)
+    #     #pred = model.predict_from_dir(dir_path="/home/harveen/bol/dev/eval", ext="wav")
+    #     pred = model.predict("/home/harveen/Downloads/test.wav", apply_vad=True, verbose=1)
+    #     local_pred = ""
+    #     print(pred)
+    #     for item in pred:
+    #         if (
+    #             item["file"].split("/")[-1]
+    #             == "ahd_28_long_1335_hin-002500-005500-1-1.wav"
+    #         ):
+    #             local_pred = item["transcription"]
+    #     self.assertEqual(local_pred, self.single_viterbi_output, "Should be same")
 
-    def test_load_model_from_dir_6_long(self):
+    # def test_wav(self):
+    #     model = load_model("hi-ts", use_lm=False)
+    #     #pred = model.predict_from_dir(dir_path="/home/harveen/bol/dev/eval", ext="wav")
+    #     pred = model.predict("/home/harveen/Downloads/2021-09-21T02_14_49_841Z.wav",  verbose=1, convert=True)
+    #     local_pred = ""
+    #     print(pred)
+    #     for item in pred:
+    #         if (
+    #             item["file"].split("/")[-1]
+    #             == "ahd_28_long_1335_hin-002500-005500-1-1.wav"
+    #         ):
+    #             local_pred = item["transcription"]
+    #     self.assertEqual(local_pred, self.single_viterbi_output, "Should be same")
+
+
+    def test_mp3(self):
         model = load_model("hi-ts", use_lm=False)
         #pred = model.predict_from_dir(dir_path="/home/harveen/bol/dev/eval", ext="wav")
-        pred = model.predict("/home/harveen/Downloads/test.wav",  verbose=1, convert=True)
+        wav_file = convert_mp3_to_wav('/home/harveen/Downloads/Rev.mp3', resample=True)
+        pred = model.predict(wav_file,  verbose=1, convert=True)
         local_pred = ""
         print(pred)
         for item in pred:
