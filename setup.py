@@ -6,8 +6,8 @@ from setuptools import setup
 
 setup(
     name="bol-library",
-    version="0.1.7",
-    description="Speech to Text Library plus addons",
+    version="0.1.8",
+    description="Speech to Text Library for Indic Languages",
     url="https://github.com/harveenchadha/bol/",
     author="Harveen Singh Chadha",
     author_email="harveensinghchadha@gmail.com",
