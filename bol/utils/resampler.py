@@ -10,9 +10,7 @@ def resample_using_sox(file,
                      ):
     tfm = sox.Transformer()
     tfm.set_output_format(
-        file_type = 'wav',
         rate = 16000,
-        #bits = 16,
         channels = 1)
     
     
