@@ -1,9 +1,8 @@
-import torchaudio
-import torch
 from tqdm import tqdm
-from bol.utils.helper_functions import convert_audio_to_16k, read_wav_file, convert_audio, get_sample_rate
+from bol.utils.helper_functions import  read_wav_file
 from .._model import BolModel
 from bol.data import Wav2Vec2TsDataLoader
+from bol.utils.resampler import resample_using_sox
 
 
 class Wav2Vec2TS(BolModel):
@@ -28,7 +27,7 @@ class Wav2Vec2TS(BolModel):
 
     #     return dict(zip(preds, filenames))
 
-    def predict_using_torchaudio(self, file_path, verbose, dataloader=False):
+    def predict_using_torchaudio(self, file_path, verbose, dataloader=False, convert=False):
         preds = []
         filenames = []
 
@@ -38,7 +37,7 @@ class Wav2Vec2TS(BolModel):
             disable = True
 
         if dataloader:
-            dataloader_obj = Wav2Vec2TsDataLoader(batch_size = 1, num_workers = 1 ,file_data_path = file_path)
+            dataloader_obj = Wav2Vec2TsDataLoader(batch_size = 1, num_workers = 1 ,file_data_path = file_path, convert=convert)
             dataloader = dataloader_obj.get_file_data_loader()
 
             for batch in tqdm(dataloader, disable=disable):
@@ -51,10 +50,8 @@ class Wav2Vec2TS(BolModel):
         else:
             for file in tqdm(file_path, disable=disable):
                 wav, sample_rate = read_wav_file(file, 'ta')
-                if sample_rate!= 16000: #hardcoding
-                    wav = convert_audio( file, sample_rate, 16000, 'sox')
-                    new_path = "/tmp/" + file.split('/')[-1]
-                    wav, sample_rate = read_wav_file(new_path, 'ta')
+                if sample_rate != 16000 and convert:
+                    wav = resample_using_sox(wav, input_type='array', output_filepath='array', sample_rate_in=sample_rate)
                 pred = self._model(wav)
                 preds.append(pred)
                 filenames.append(file)
@@ -68,6 +65,7 @@ class Wav2Vec2TS(BolModel):
         return_filenames=True,
         apply_vad=False,
         verbose=0,
+        convert=False
     ):
         # ## works in dataloader but output is not correct ##
 
@@ -82,24 +80,25 @@ class Wav2Vec2TS(BolModel):
         #     filenames.extend(filename)
         # ## end dataloader ##
 
+        if type(file_path) == str:
+            file_path = [file_path]
+
         preds = []
         filenames = []
 
-        if type(file_path) == str:
-            file_path = [file_path]
 
         if apply_vad:
             for file in file_path:
                 files_split_from_vad = self.preprocess_vad(file)
                 preds_local, filenames_local = self.predict_using_torchaudio(
-                    files_split_from_vad, verbose
+                    files_split_from_vad, verbose, convert
                 )
                 predictions = self.postprocess_vad(filenames_local, preds_local)
                 preds.append(predictions)
                 filenames.append(file)
 
         else:
-            preds, filenames = self.predict_using_torchaudio(file_path, verbose)
+            preds, filenames = self.predict_using_torchaudio(file_path, verbose, convert)
 
         # def load_file(local_file):
         #     wav, _ = torchaudio.load(local_file)

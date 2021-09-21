@@ -81,6 +81,21 @@ class Directory(unittest.TestCase):
         #pred = model.predict_from_dir(dir_path="/home/harveen/bol/dev/eval", ext="wav")
         pred = model.predict("/home/harveen/Downloads/test.wav", apply_vad=True, verbose=1)
         local_pred = ""
+        print(pred)
+        for item in pred:
+            if (
+                item["file"].split("/")[-1]
+                == "ahd_28_long_1335_hin-002500-005500-1-1.wav"
+            ):
+                local_pred = item["transcription"]
+        self.assertEqual(local_pred, self.single_viterbi_output, "Should be same")
+
+    def test_load_model_from_dir_6_long(self):
+        model = load_model("hi-ts", use_lm=False)
+        #pred = model.predict_from_dir(dir_path="/home/harveen/bol/dev/eval", ext="wav")
+        pred = model.predict("/home/harveen/Downloads/test.wav",  verbose=1, convert=True)
+        local_pred = ""
+        print(pred)
         for item in pred:
             if (
                 item["file"].split("/")[-1]

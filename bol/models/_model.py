@@ -7,10 +7,10 @@ import torch.nn as nn
 from bol.inference import call_vad
 from bol.metrics import wer_for_evaluate
 from bol.metrics.cer import cer_for_evaluate
-from bol.utils.helper_functions import convert_audio, get_audio_duration, get_sample_rate, write_audio_file, read_wav_file
+from bol.utils.helper_functions import  get_audio_duration
 from bol.utils.file_operations.file_ops import (load_text_files_in_parallel,
                        load_text_files_in_parallel_from_dir)
-
+from bol.utils.resampler import resample_using_sox
 
 class BolModel:
     def __init__(self, model_path, use_cuda_if_available):
@@ -28,6 +28,8 @@ class BolModel:
         # get dataloader
         pass
 
+        
+
     def predict_from_dir(self, dir_path, ext, with_lm=False, convert=False):
         file_path = glob.glob(dir_path + "/*." + ext, recursive=True)
         return self.predict(
@@ -36,12 +38,15 @@ class BolModel:
 
     def preprocess_vad(self, wav_path):
         duration = get_audio_duration(wav_path)
-        sample_rate = get_sample_rate(wav_path)
-        if sample_rate!= 16000: #Hardcoding
-            wav = convert_audio( wav_path, sample_rate, 16000, 'sox')
-            new_path = "/tmp/" + wav_path.split('/')[-1] 
-            #write_audio_file(new_path, wav, 16000, 'ta')
-            wav_path = new_path
+
+        new_path = "/tmp/" + wav_path.split('/')[-1]
+        resample_using_sox(wav_path,
+                    input_type='file',
+                    output_type='file',
+                    output_filepath=new_path)
+        wav_path = new_path
+        print(wav_path)
+
 
         file_paths = []
         if duration > 10: ## Hardcoding

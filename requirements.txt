@@ -6,4 +6,5 @@ torchaudio>=0.8
 #ffmpeg-python
 python_Levenshtein
 joblib
+sox
 #webrtcvad

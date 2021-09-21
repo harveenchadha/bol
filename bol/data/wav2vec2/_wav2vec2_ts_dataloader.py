@@ -1,7 +1,8 @@
 import torch
 import torchaudio
 from torch.utils.data import Dataset
-from bol.utils.helper_functions import read_wav_file, convert_audio
+from bol.utils.helper_functions import read_wav_file
+from bol.utils.resampler import resample_using_sox
 
 
 def get_batch_encoder_input(batch_samples):
@@ -24,8 +25,9 @@ def get_batch_encoder_input(batch_samples):
 
 
 class Wav2Vec2TsDataSet(Dataset):
-    def __init__(self, audio_path):
+    def __init__(self, audio_path, convert):
         self.audio_paths = audio_path
+        self.convert = convert
 
     def __len__(self):
         return len(self.audio_paths)
@@ -36,19 +38,16 @@ class Wav2Vec2TsDataSet(Dataset):
 
     def _get_feature(self, filepath):
         wav, sample_rate = read_wav_file(filepath, 'ta')
-        if sample_rate != 16000:
-            # wav = convert_audio(wav, sample_rate, 16000, 'ta')
-            if sample_rate!= 16000: #hardcoding
-                wav = convert_audio( filepath, sample_rate, 16000, 'sox')
-                new_path = "/tmp/" + filepath.split('/')[-1]
-                wav, sample_rate = read_wav_file(new_path, 'ta')
+        if sample_rate != 16000 and self.convert:
+            wav = resample_using_sox(wav, input_type='array', output_filepath='array', sample_rate_in=sample_rate)
         return wav
 
 
 class Wav2Vec2TsDataLoader:
-    def __init__(self, batch_size, num_workers, file_data_path):
+    def __init__(self, batch_size, num_workers, file_data_path, convert):
         self.batch_size = batch_size
         self.num_workers = num_workers
+        self.convert = convert
 
         file_data_loader = self.create_data_loaders_from_dataset(
             file_data_path, batch_size, num_workers
@@ -56,7 +55,7 @@ class Wav2Vec2TsDataLoader:
         self.file_data_loader = file_data_loader
 
     def create_data_loaders_from_dataset(self, file_data_path, batch_size, num_workers):
-        train_dataset = Wav2Vec2TsDataSet(file_data_path)
+        train_dataset = Wav2Vec2TsDataSet(file_data_path, self.convert)
         file_data_loader = torch.utils.data.DataLoader(
             train_dataset,
             batch_size=batch_size,

@@ -131,6 +131,7 @@ class Wav2vec2Fairseq(BolModel):
         return_filenames=True,
         apply_vad=False,
         verbose=0,
+        convert=False
     ):
         text = ""
 
