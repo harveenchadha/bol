@@ -8,7 +8,7 @@ from bol.inference import call_vad
 from bol.metrics import wer_for_evaluate
 from bol.metrics.cer import cer_for_evaluate
 from bol.utils.helper_functions import  get_audio_duration
-from bol.utils.file_operations.file_ops import (load_text_files_in_parallel,
+from bol.utils import (load_text_files_in_parallel,
                        load_text_files_in_parallel_from_dir)
 from bol.utils.resampler import resample_using_sox
 
