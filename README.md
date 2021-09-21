@@ -27,7 +27,8 @@ Output:
 
 
 
-## Current Models that are available
+## Model Zoo
+### Proudly hosted on HuggingFace Datasets
 
 | Unique Code | Language Code | Backend | Algo | Language | provider | LM Support | CPU | GPU |
 |------------|------------|--------|-------|-------------|----------|-------------|----|----|
