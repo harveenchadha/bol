@@ -65,7 +65,7 @@ class Wav2Vec2TS(BolModel):
             for file in file_path:
                 files_split_from_vad = self.preprocess_vad(file)
                 preds_local, filenames_local = self.predict_for_files(
-                    files_split_from_vad, verbose, convert
+                    files_split_from_vad, verbose=verbose, convert=False
                 )
                 predictions = self.postprocess_vad(filenames_local, preds_local)
                 preds.append(predictions)

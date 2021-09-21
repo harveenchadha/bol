@@ -7,7 +7,7 @@ import torch.nn as nn
 from bol.inference import call_vad
 from bol.metrics import wer_for_evaluate
 from bol.metrics.cer import cer_for_evaluate
-from bol.utils.helper_functions import  get_audio_duration
+from bol.utils.helper_functions import  get_audio_duration, get_sample_rate
 from bol.utils import (load_text_files_in_parallel,
                        load_text_files_in_parallel_from_dir)
 from bol.utils.resampler import resample_using_sox
@@ -38,14 +38,15 @@ class BolModel:
 
     def preprocess_vad(self, wav_path):
         duration = get_audio_duration(wav_path)
-
-        new_path = "/tmp/" + wav_path.split('/')[-1]
-        resample_using_sox(wav_path,
-                    input_type='file',
-                    output_type='file',
-                    output_filepath=new_path)
+        sample_rate = get_sample_rate(wav_path)
+        if sample_rate!=16000:
+            new_path = "/tmp/" + wav_path.split('/')[-1]
+            resample_using_sox(wav_path,
+                        input_type='file',
+                        output_type='file',
+                        output_filepath=new_path)
         wav_path = new_path
-        print(wav_path)
+
 
 
         file_paths = []
