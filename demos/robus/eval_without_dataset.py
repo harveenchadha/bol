@@ -59,8 +59,8 @@ def evaluate_dir(local_dir, target_dest, with_lm = True):
 
 model_id = 'Harveenchadha/hindi_model_with_lm_vakyansh'
 with_lm = True
-local_dir = '/home/harveen/indic_wav2vec/IndicWav2Vec/w2v_inference/scripts/taarini_without_numbers'
-target_dest = '/home/harveen/indic_wav2vec/hindi_tarini_evaluation_hf/predicted/'
+local_dir = ''
+target_dest = ''
 
 if with_lm : 
     processor, model = load_model_with_lm(model_id)
